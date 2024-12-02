@@ -1,0 +1,15 @@
+.playlist-container {
+    max-width: 600px;
+    margin: auto;
+    padding: 20px;
+    background-color: #1c1c1c;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+}
+
+.playlist-container h2{
+    color: #d9a835;
+}
