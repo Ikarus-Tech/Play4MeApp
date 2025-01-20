@@ -8,6 +8,8 @@ create table Usuario(
     primary key(id)
 );
 
+Select username from Usuario;
+
 create table Venue(
 	id int not null auto_increment,
     nome varchar(50) not null,
@@ -84,4 +86,4 @@ SELECT
           JOIN Venue v ON r.venue_id = v.id
           LEFT JOIN Musicas_Requisicao mr ON r.requisicao_id = mr.requisicao_id
           LEFT JOIN Status_ s ON mr.id = s.music_id
-          WHERE r.venue_id = 1;
+          WHERE r.venue_id = 1 order by r.data_requisicao desc;

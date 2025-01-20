@@ -6,7 +6,7 @@ body{
   padding: 0;
 }
 
-.login-container {
+.auth-container {
   background-color: #1c1c1c;
   padding: 40px;
   border-radius: 8px;
@@ -17,7 +17,7 @@ body{
   text-align: center;
 }
 
-.login-container img {
+.auth-container img {
   width: 100px;
   margin-bottom: 20px;
 }

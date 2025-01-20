@@ -78,7 +78,7 @@ export default function App() {
   };
 
   return (
-    <div className="container">
+    <div className="auth-container">
       <img src={logo} alt="Play 4 Me Logo" />
       <h2>Get Started</h2>
       <form onSubmit={handleSubmit}>
