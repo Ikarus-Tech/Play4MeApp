@@ -50,6 +50,15 @@ export default function App() {
     setShowAside(!showAside);
   };
 
+  //Handle delete selected song
+  const deleteSelectedSong = (id) => {
+    setSelected((current) => {
+      const updated = current.filter((s) => s.id !== id);
+
+      return updated;
+    });
+  };
+
   // Handle music search
   const handleSearch = async () => {
     setIsSearching(true);
@@ -182,7 +191,12 @@ export default function App() {
               />
               <h4>{song.name}</h4>
               <div className="icon">
-                <img src={bin} alt="Bin Icon" className="bin-icon" />
+                <img
+                  src={bin}
+                  alt="Bin Icon"
+                  className="bin-icon"
+                  onClick={() => deleteSelectedSong(song.id)}
+                />
               </div>
             </div>
           ))
