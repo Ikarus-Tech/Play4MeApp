@@ -19,9 +19,8 @@ export default function App() {
   const navigate = useNavigate();
   const storedToken = localStorage.getItem("token");
   const [isSearching, setIsSearching] = useState(false);
-  const [showAside, setShowAside] = useState(false);
+  const [showSidebar, setShowSidebar] = useState(false);
 
-  // Handle token expiration and user data
   useEffect(() => {
     if (storedToken) {
       try {
@@ -33,7 +32,7 @@ export default function App() {
           navigate("/login");
         } else {
           setUsername(decodedToken.username);
-          setUserId(decodedToken.userId); // Store userId from token
+          setUserId(decodedToken.userId);
         }
       } catch (error) {
         console.error("Erro ao decodificar o token:", error);
@@ -45,21 +44,15 @@ export default function App() {
     }
   }, [storedToken, navigate]);
 
-  // Toggle aside visibility
-  const handleToggeAside = () => {
-    setShowAside(!showAside);
+  const toggleSidebar = () => {
+    setShowSidebar(!showSidebar);
   };
 
-  //Handle delete selected song
   const deleteSelectedSong = (id) => {
-    setSelected((current) => {
-      const updated = current.filter((s) => s.id !== id);
-
-      return updated;
-    });
+    setSelected((current) => current.filter((s) => s.id !== id));
+    toast.info("Música removida da lista!");
   };
 
-  // Handle music search
   const handleSearch = async () => {
     setIsSearching(true);
     try {
@@ -76,26 +69,23 @@ export default function App() {
     }
   };
 
-  // Handle Enter key to search
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       handleSearch();
     }
   };
 
-  // Handle song selection
   const handleSelectSong = (song) => {
     if (!selected.some((s) => s.id === song.id)) {
       setSelected([...selected, song]);
-      setServerResponse(null);
+      toast.success(`"${song.name}" adicionada à lista de requisições!`);
     }
   };
 
-  // Handle server request to send selected songs
   const handleRequest = async () => {
     try {
       const token = localStorage.getItem("token");
-      const venueId = 1; // Example venueId, can be dynamic
+      const venueId = 1;
       const response = await axios.post(
         "http://localhost:8081/request",
         {
@@ -123,21 +113,38 @@ export default function App() {
     <div className="app-container">
       <ToastContainer />
       <main className="main-content">
-        <div className="search-container">
-          <i
-            className="bx bx-search-alt-2 search-icon"
-            onClick={handleSearch}
-          ></i>
-          <input
-            type="text"
-            name="searchInput"
-            id="searchInput"
-            className="searchInput"
-            placeholder="Pesquise uma música"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyDown={handleKeyDown}
-          />
+        <div className="app-nav">
+          <div className="search-container">
+            <i
+              className="bx bx-search-alt-2 search-icon"
+              onClick={handleSearch}
+            ></i>
+            <input
+              type="text"
+              className="searchInput"
+              placeholder="Pesquise uma música"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={handleKeyDown}
+            />
+          </div>
+          <div className="requests">
+            <button
+              className="playlist-icon"
+              onClick={() => navigate("/playlist")}
+            >
+              <img
+                src={require("../../assets/playlist.png")}
+                alt="Playlist Icon"
+                style={{ width: "24px", height: "24px" }}
+              />
+            </button>
+            <i
+              className="bx bx-menu menu-icon"
+              onClick={toggleSidebar}
+              style={{ cursor: "pointer" }}
+            ></i>
+          </div>
         </div>
 
         <ul className="musicList">
@@ -165,54 +172,43 @@ export default function App() {
         </ul>
       </main>
 
-      <aside className={`aside ${showAside ? "visible" : ""}`}>
-        <button
-          className="close-aside-button"
-          onClick={() => setShowAside(false)}
-        >
-          ✖
-        </button>
-        <h3>
-          {serverResponse ? "Resposta do Servidor" : "Músicas escolhidas"}
-        </h3>
-        {serverResponse ? (
-          <div className="server-response">
-            <p>
-              {serverResponse.message || "Requisição processada com sucesso!"}
-            </p>
-          </div>
-        ) : (
-          selected.map((song, index) => (
-            <div className="selected-song-item" key={index}>
-              <img
-                src={song.album.images[0]?.url || astroThunder}
-                alt="Song"
-                className="selectedSongImg"
-              />
-              <h4>{song.name}</h4>
-              <div className="icon">
-                <img
-                  src={bin}
-                  alt="Bin Icon"
-                  className="bin-icon"
-                  onClick={() => deleteSelectedSong(song.id)}
-                />
-              </div>
-            </div>
-          ))
-        )}
-        <div id="request-button">
-          <button onClick={handleRequest} disabled={selected.length === 0}>
-            Requisitar
+      <div className={`sidebar ${showSidebar ? "show" : ""}`}>
+        <div className="sidebar-header">
+          <h3>Músicas escolhidas</h3>
+          <button className="close-sidebar" onClick={toggleSidebar}>
+            ✖
           </button>
         </div>
-      </aside>
-
-      {!showAside && (
-        <button className="bottom-sheet-toggle" onClick={handleToggeAside}>
-          Requisições
+        <div className="sidebar-content">
+          {selected.length > 0 ? (
+            selected.map((song, index) => (
+              <div className="selected-song-item" key={index}>
+                <img
+                  src={song.album.images[0]?.url || astroThunder}
+                  alt="Song"
+                  className="selectedSongImg"
+                />
+                <h4>{song.name}</h4>
+                <button
+                  className="delete-button"
+                  onClick={() => deleteSelectedSong(song.id)}
+                >
+                  <img className="bin-icon" src={bin} alt="Excluir" />
+                </button>
+              </div>
+            ))
+          ) : (
+            <p>Nenhuma música selecionada</p>
+          )}
+        </div>
+        <button
+          onClick={handleRequest}
+          disabled={selected.length === 0}
+          className="request-button"
+        >
+          Requisitar
         </button>
-      )}
+      </div>
     </div>
   );
 }

@@ -10,16 +10,20 @@
   --other: #14181b;
 }
 
+/* ========== Main Content ========== */
 .app-container {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  width: 100%;
+  min-height: 100vh;
 }
 
 .main-content {
-  flex: 1;
+  flex: 1; /* O main ocupa todo o espaço disponível */
   padding: 20px;
-  background-color: var(--accent-color);
-  height: 80vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centraliza o conteúdo */
 }
 
 span {
@@ -34,17 +38,37 @@ h3 {
 .bin-icon{
   width: 30px;
   cursor: pointer;
+  background: none;
 }
 
-/* /==========INPUT==========/ */
+.menu-icon {
+  font-size: 24px;
+  color: #cca714;
+}
+
+.delete-button{
+  background: none; /* Remove qualquer fundo padrão */
+  border: none; /* Remove bordas extras */
+}
+
+
+/* =========== App-Head =============*/
+.app-nav {
+  display: flex;
+  align-items: center; /* Centraliza os itens verticalmente */
+  justify-content: flex-start; /* Alinha os itens à esquerda */
+  gap: 1rem; /* Define o espaçamento preciso entre os elementos */
+  width: 80%;
+}
+
 .search-container {
   position: relative;
-  width: 100%;
-  max-width: 70%;
+  flex-grow: 1; /* Permite que a barra de pesquisa ocupe o máximo de espaço disponível */
+  width: 100%; /* Limita a largura da barra de pesquisa */
 }
 
 .searchInput {
-  width: 100%;
+  width: 100%; /* Faz o input ocupar 100% do espaço do container */
   padding: 10px 15px 10px 40px;
   font-size: 1rem;
   border-radius: 10px;
@@ -65,14 +89,37 @@ h3 {
   left: 10px;
   transform: translateY(-50%);
   font-size: 1.5rem;
-  color: #ffffff;
+  color: #cca714;
   cursor: pointer;
   transition: color 0.3s ease;
-  color: #cca714;
 }
 
 .search-icon:hover {
   color: #f0a500;
+}
+
+.requests {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0; /* Remove margens adicionais */
+  padding: 0; /* Remove espaçamento interno */
+  margin-left: 4.5rem;
+}
+
+.playlist-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  display: flex;
+  align-items: center; /* Centraliza o ícone dentro do botão */
+  justify-content: center;
+}
+
+.playlist-icon img {
+  width: 24px;
+  height: 24px;
 }
 
 /* /==========LISTA DAS MÚSICAS EM EXIBIÇÃO==========/ */
@@ -80,13 +127,8 @@ h3 {
   list-style: none;
   padding: 0;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  height: 90vh;
   flex-wrap: wrap;
-  overflow-y: auto;
-  max-width: 70vw;
+  gap: 10px;
 }
 
 .musicList li {
@@ -98,6 +140,72 @@ h3 {
   background-color: var(--accent-color);
   cursor: pointer;
   transition: transform 0.3s, box-shadow 0.3s;
+}
+
+/* ========== Sidebar ========== */
+.sidebar {
+  position: fixed;
+  top: 0;
+  right: -400px; /* Inicialmente fora da tela */
+  width: 400px;
+  height: 100%;
+  background-color: #242424;
+  color: white;
+  transition: right 0.3s ease; /* Transição suave para o movimento */
+  overflow-y: auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-content{
+  width: 90%;
+  margin: 0 auto;
+  text-align: center;
+}
+
+/* Quando o sidebar estiver visível */
+.sidebar.show {
+  right: 0;
+}
+
+.close-sidebar {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: transparent;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.selected-song-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.selectedSongImg {
+  width: 50px;
+  border-radius: 8px;
+}
+
+.request-button {
+  margin-top: 85%;
+  width: 100%;
+  padding: 0.5rem;
+  background-color: var(--secondary-color);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.request-button:disabled {
+  background-color: #555;
+  cursor: not-allowed;
 }
 
 /* /==========SCROLL BAR==========/ */
@@ -217,19 +325,7 @@ h3 {
   transform: translateX(0);
 }
 
-/* /==========BOTÃIO DE ABRIR REQUISIÇÕES==========/ */
-.bottom-sheet-toggle {
-  position: fixed; /* Fixa o botão em relação à tela */
-  bottom: 20px;
-  right: 20px;
-  padding: 10px 20px;
-  background-color: var(--secondary-color);
-  color: #fff;
-  border-radius: 999px;
-  cursor: pointer;
-  z-index: 1001; /* Garante que o botão estará acima de outros elementos */
-  display: none;
-}
+
 
 /* /==========MÚSICAS SELECCIONADAS==========/ */
 .selected-song-item {
