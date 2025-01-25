@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../../styles/Playlist.css";
+import { jwtDecode } from "jwt-decode";
 
 const Playlist = () => {
   const [musicas, setMusicas] = useState([]); // Músicas aprovadas
@@ -12,7 +13,16 @@ const Playlist = () => {
       const token = localStorage.getItem("token"); // Token JWT salvo
       if (!token) throw new Error("Token não encontrado.");
 
-      const response = await fetch("http://localhost:8081/getrequests", {
+      //Decodifica o token JWT para acessar os dados no payload
+      const decodedToken = jwtDecode(token);
+
+      // Acessa o venue_id do token (certifique-se de que o campo correto está no token)
+      const venueId = decodedToken.id;
+
+      if (!venueId) throw new Error("venue_id não encontrado no token.");
+
+      // Agora use o venueId na requisição
+      const response = await fetch(`http://localhost:8081/getrequests?venue_id=${venueId}`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`, // Cabeçalho com token JWT
