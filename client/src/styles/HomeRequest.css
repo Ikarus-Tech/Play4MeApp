@@ -19,11 +19,15 @@
 }
 
 .main-content {
-  flex: 1; /* O main ocupa todo o espaço disponível */
+  flex: 1;
+  /* O main ocupa todo o espaço disponível */
   padding: 20px;
   display: flex;
   flex-direction: column;
-  align-items: center; /* Centraliza o conteúdo */
+  align-items: center;
+  /* Centraliza o conteúdo */
+  width: 90%;
+
 }
 
 span {
@@ -35,7 +39,7 @@ h3 {
   text-align: center;
 }
 
-.bin-icon{
+.bin-icon {
   width: 30px;
   cursor: pointer;
   background: none;
@@ -46,29 +50,37 @@ h3 {
   color: #cca714;
 }
 
-.delete-button{
-  background: none; /* Remove qualquer fundo padrão */
-  border: none; /* Remove bordas extras */
+.delete-button {
+  background: none;
+  /* Remove qualquer fundo padrão */
+  border: none;
+  /* Remove bordas extras */
 }
 
 
 /* =========== App-Head =============*/
 .app-nav {
   display: flex;
-  align-items: center; /* Centraliza os itens verticalmente */
-  justify-content: flex-start; /* Alinha os itens à esquerda */
-  gap: 1rem; /* Define o espaçamento preciso entre os elementos */
+  align-items: center;
+  /* Centraliza os itens verticalmente */
+  justify-content: flex-start;
+  /* Alinha os itens à esquerda */
+  gap: 1rem;
+  /* Define o espaçamento preciso entre os elementos */
   width: 80%;
 }
 
 .search-container {
   position: relative;
-  flex-grow: 1; /* Permite que a barra de pesquisa ocupe o máximo de espaço disponível */
-  width: 100%; /* Limita a largura da barra de pesquisa */
+  flex-grow: 1;
+  /* Permite que a barra de pesquisa ocupe o máximo de espaço disponível */
+  width: 100%;
+  /* Limita a largura da barra de pesquisa */
 }
 
 .searchInput {
-  width: 100%; /* Faz o input ocupar 100% do espaço do container */
+  width: 100%;
+  /* Faz o input ocupar 100% do espaço do container */
   padding: 10px 15px 10px 40px;
   font-size: 1rem;
   border-radius: 10px;
@@ -102,8 +114,10 @@ h3 {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0; /* Remove margens adicionais */
-  padding: 0; /* Remove espaçamento interno */
+  margin: 0;
+  /* Remove margens adicionais */
+  padding: 0;
+  /* Remove espaçamento interno */
   margin-left: 4.5rem;
 }
 
@@ -113,7 +127,8 @@ h3 {
   cursor: pointer;
   padding: 5px;
   display: flex;
-  align-items: center; /* Centraliza o ícone dentro do botão */
+  align-items: center;
+  /* Centraliza o ícone dentro do botão */
   justify-content: center;
 }
 
@@ -125,10 +140,18 @@ h3 {
 /* /==========LISTA DAS MÚSICAS EM EXIBIÇÃO==========/ */
 .musicList {
   list-style: none;
-  padding: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  /* Permite que os itens quebrem para a próxima linha */
+  justify-content: center;
+  /* Centraliza os itens horizontalmente */
+  align-items: center;
+  /* Centraliza os itens verticalmente, se necessário */
+  gap: 20px;
+  /* Espaçamento entre os itens */
+  margin: 0 auto;
+  padding: 20px;
+  text-align: center;
 }
 
 .musicList li {
@@ -146,19 +169,21 @@ h3 {
 .sidebar {
   position: fixed;
   top: 0;
-  right: -400px; /* Inicialmente fora da tela */
+  right: -400px;
+  /* Inicialmente fora da tela */
   width: 400px;
   height: 100%;
   background-color: #242424;
   color: white;
-  transition: right 0.3s ease; /* Transição suave para o movimento */
+  transition: right 0.3s ease;
+  /* Transição suave para o movimento */
   overflow-y: auto;
   padding: 1rem;
   display: flex;
   flex-direction: column;
 }
 
-.sidebar-content{
+.sidebar-content {
   width: 90%;
   margin: 0 auto;
   text-align: center;
@@ -246,6 +271,7 @@ h3 {
 .aside::-webkit-scrollbar-thumb:hover {
   background-color: #b58f0a;
 }
+
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -347,7 +373,7 @@ h3 {
   color: var(--neutral-color);
 }
 
-.icon{
+.icon {
   margin-left: auto;
 }
 
@@ -358,7 +384,7 @@ h3 {
   text-align: center;
 }
 
-#request-button > button {
+#request-button>button {
   padding: 0.5rem 1rem;
   border: none;
   border-radius: 10px;
@@ -368,7 +394,7 @@ h3 {
   transition: 0.3s;
 }
 
-#request-button > button:hover {
+#request-button>button:hover {
   background-color: #b58f0a;
   transform: translateX(5px);
 }
@@ -394,18 +420,6 @@ h3 {
 
 /*==========RESPONSIVIDADE==========*/
 @media (max-width: 768px) {
-  .aside {
-    display: none;
-  }
-
-  .close-aside-button {
-    display: block;
-  }
-
-  .bottom-sheet-toggle {
-    display: block;
-  }
-
   .main-content {
     padding-bottom: 60px;
   }
@@ -414,8 +428,20 @@ h3 {
     background-color: #333;
   }
 
-  .aside.visible {
-    display: block;
-    transform: translateX(0);
+}
+
+@media (max-width: 435px) {
+
+  /* ========== Sidebar ========== */
+  .request-button{
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .sidebar-content {
+    width: 70%;
+    margin: 0 auto;
+    text-align: center;
   }
 }
