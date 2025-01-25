@@ -388,6 +388,7 @@ app.post("/request", async (req, res) => {
 
 
 //Rota para retornar as requisicoes
+// Rota para retornar as requisições
 app.get("/getrequests", async (req, res) => {
   try {
     // Verificar se o token foi enviado no cabeçalho da requisição
@@ -405,36 +406,51 @@ app.get("/getrequests", async (req, res) => {
         return res.status(401).json({ error: "Token inválido" });
       }
 
-      // Extraímos o id da venue do token
-      const venue_id = decoded.id;
+      // Capturamos o filtro opcional de `venue_id` ou `user_id`
+      const { venue_id: queryVenueId, user_id: queryUserId } = req.query;
 
-      // Realizar a consulta filtrando pelo venue_id e juntando a tabela Status_
-      const [rows] = await db2.query(
-        `
-          SELECT 
-            r.requisicao_id,
-            u.id AS cliente_id,
-            u.username AS cliente_nome,
-            u.email AS cliente_email,
-            v.id AS venue_id,
-            v.nome AS venue_nome,
-            v.localizacao AS venue_localizacao,
-            r.data_requisicao,
-            m.id AS musica_id, -- Adiciona o ID da música
-            m.nome AS musica_nome,
-            m.imagem AS musica_imagem,
-            m.duracao AS musica_duracao,
-            s.status_text -- Adiciona o status da música
-          FROM Requisicoes r
-          JOIN Usuario u ON r.cliente_id = u.id
-          JOIN Venue v ON r.venue_id = v.id
-          LEFT JOIN Musicas_Requisicao m ON r.requisicao_id = m.requisicao_id
-          LEFT JOIN Status_ s ON m.id = s.music_id -- Junção com a tabela Status_
-          WHERE r.venue_id = ? order by r.data_requisicao desc
-        `,
-        [venue_id]
-      );
+      // Construção dinâmica da query SQL
+      let query = `
+        SELECT 
+          r.requisicao_id,
+          u.id AS cliente_id,
+          u.username AS cliente_nome,
+          u.email AS cliente_email,
+          v.id AS venue_id,
+          v.nome AS venue_nome,
+          v.localizacao AS venue_localizacao,
+          r.data_requisicao,
+          m.id AS musica_id,
+          m.nome AS musica_nome,
+          m.imagem AS musica_imagem,
+          m.duracao AS musica_duracao,
+          s.status_text
+        FROM Requisicoes r
+        JOIN Usuario u ON r.cliente_id = u.id
+        JOIN Venue v ON r.venue_id = v.id
+        LEFT JOIN Musicas_Requisicao m ON r.requisicao_id = m.requisicao_id
+        LEFT JOIN Status_ s ON m.id = s.music_id
+        WHERE 1=1
+      `;
 
+      const queryParams = [];
+
+      if (queryVenueId) {
+        query += " AND r.venue_id = ?";
+        queryParams.push(queryVenueId);
+      }
+
+      if (queryUserId) {
+        query += " AND r.cliente_id = ?";
+        queryParams.push(queryUserId);
+      }
+
+      query += " ORDER BY r.data_requisicao DESC";
+
+      // Executa a consulta no banco de dados
+      const [rows] = await db2.query(query, queryParams);
+
+      // Processa os resultados da consulta para estruturar os dados
       const requisicoes = rows.reduce((acc, row) => {
         let requisicao = acc.find((r) => r.requisicao_id === row.requisicao_id);
         if (!requisicao) {
@@ -458,16 +474,18 @@ app.get("/getrequests", async (req, res) => {
 
         if (row.musica_nome) {
           requisicao.musicas.push({
-            id: row.musica_id, // Adiciona o ID da música
+            id: row.musica_id,
             nome: row.musica_nome,
             imagem: row.musica_imagem,
             duracao: row.musica_duracao,
-            status_text: row.status_text, // Adiciona o status da música
+            status_text: row.status_text,
           });
         }
 
         return acc;
       }, []);
+
+      // Retorna as requisições processadas
       res.json(requisicoes);
     });
   } catch (error) {
@@ -475,6 +493,7 @@ app.get("/getrequests", async (req, res) => {
     res.status(500).json({ error: "Erro ao buscar requisições" });
   }
 });
+
 
 
 // Rota para processar a resposta do Venue para uma música específica
