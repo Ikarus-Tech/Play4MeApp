@@ -131,7 +131,7 @@ export default function App() {
           <div className="requests">
             <button
               className="playlist-icon"
-              onClick={() => navigate("/playlist")}
+              onClick={() => navigate("/my-requests")}
             >
               <img
                 src={require("../../assets/playlist.png")}

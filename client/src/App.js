@@ -9,6 +9,7 @@ import Registration from './components/User/Registration.jsx';
 import HomeRequest from './components/User/HomeRequest.jsx';
 import RequestManager from './components/Venue/Requests-Manager.jsx';
 import Playlist from './components/Venue/Playlist.jsx'
+import MyRequests from './components/User/MyRequests.jsx'
 import 'bootstrap-icons/font/bootstrap-icons.css';
 
 
@@ -24,6 +25,7 @@ function App() {
           <Route path='/home' element={<HomeRequest />} />
           <Route path='/request-manager' element={<RequestManager />} />
           <Route path='/playlist' element={<Playlist />} />
+          <Route path='/my-requests' element={<MyRequests />} />
         </Routes>
       </BrowserRouter>
     </GoogleOAuthProvider>
