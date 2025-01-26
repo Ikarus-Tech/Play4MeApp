@@ -40,7 +40,7 @@ const Login = () => {
   }
 
   return (
-    <div className="login-container">
+    <div className="auth-container">
       <img src={logo} alt="Play 4 Me Logo" />
       <h2>Welcome Back</h2>
       <p>Please login with registered account</p>
