@@ -1,13 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../../styles/Playlist.css";
 import { jwtDecode } from "jwt-decode"; // Certifique-se de importar corretamente
+import { io } from "socket.io-client"; // Importar a biblioteca socket.io
+
+const SOCKET_URL = process.env.REACT_APP_SOCKET_URL || "http://localhost:8081";
 
 const Playlist = () => {
   const [musicas, setMusicas] = useState([]); // Músicas requisitadas
   const [loading, setLoading] = useState(true); // Controle de carregamento
+  const socketRef = useRef(null); // Referência para o socket
 
+  // Função para buscar músicas requisitadas
   const fetchMusicas = async () => {
     try {
       const token = localStorage.getItem("token"); // Token JWT salvo
@@ -51,10 +56,7 @@ const Playlist = () => {
     }
   };
 
-  useEffect(() => {
-    fetchMusicas();
-  }, []);
-
+  // Função para formatar a data da requisição
   const formatarData = (data) => {
     const date = new Date(data);
     return date.toLocaleDateString("pt-PT", {
@@ -65,6 +67,54 @@ const Playlist = () => {
       minute: "2-digit",
     });
   };
+
+  // Conectar-se ao WebSocket para receber atualizações em tempo real
+  useEffect(() => {
+    fetchMusicas(); // Carrega as músicas ao montar o componente
+
+    // Conectar ao WebSocket
+    socketRef.current = io(SOCKET_URL);
+
+    socketRef.current.on("connect", () => {
+      console.log("Conectado ao servidor:", socketRef.current.id);
+      const token = localStorage.getItem("token");
+      const decodedToken = jwtDecode(token);
+      const userId = decodedToken.userId;
+      const roomId = `user-${userId}`;
+
+      socketRef.current.emit("join-room", roomId); // Entrar na sala associada ao usuário
+      console.log(`Solicitação para entrar na sala: ${roomId}`);
+    });
+
+    // Ouvir por atualizações de música (aceita ou rejeitada)
+    socketRef.current.on("music-action-response", (response) => {
+      console.log("Resposta recebida para a música:", response);
+      const { message, music_id, status_text, comentario } = response;
+
+      // Atualiza o estado da música de acordo com a resposta do servidor
+      setMusicas((prevMusicas) => {
+        return prevMusicas.map((musica) =>
+          musica.id === music_id
+            ? { ...musica, status_text: status_text }
+            : musica
+        );
+      });
+
+      // Exibe uma notificação
+      toast.success(message, {
+        position: "top-right",
+        autoClose: 5000,
+      });
+    });
+
+    // Desconectar ao desmontar o componente
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        console.log("Socket desconectado.");
+      }
+    };
+  }, []);
 
   return (
     <div className="playlist-container">

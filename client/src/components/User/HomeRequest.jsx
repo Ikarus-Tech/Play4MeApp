@@ -1,13 +1,16 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
+import { io } from "socket.io-client";
 import bin from "../../assets/bin.png";
 import astroThunder from "../../assets/astroThunder.jpeg";
 import "boxicons/css/boxicons.min.css";
 import "../../styles/HomeRequest.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+
+const SOCKET_URL = process.env.REACT_APP_SOCKET_URL || "http://localhost:8081";
 
 export default function App() {
   const [username, setUsername] = useState("");
@@ -20,6 +23,7 @@ export default function App() {
   const storedToken = localStorage.getItem("token");
   const [isSearching, setIsSearching] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
+  const socketRef = useRef(null);
 
   useEffect(() => {
     if (storedToken) {
@@ -43,6 +47,43 @@ export default function App() {
       navigate("/login");
     }
   }, [storedToken, navigate]);
+
+  useEffect(() => {
+    if (userId) {
+      const socket = io(SOCKET_URL);
+      socketRef.current = socket;
+  
+      socket.on("connect", () => {
+        console.log("Conectado ao servidor:", socket.id);
+        const roomId = `user-${userId}`;
+        socket.emit("join-room", roomId); // Entrar na sala associada ao usuário
+        console.log(`Solicitação para entrar na sala: ${roomId}`);
+      });
+  
+      socket.on("music-action-response", (response) => {
+        console.log("Resposta do servidor para a música:", response);
+        
+        const { message, music_id, status_text, comentario } = response;
+  
+        // Exibir a mensagem dependendo do status
+        toast.success(message, {
+          position: "top-right",
+          autoClose: 5000,
+        });
+      });
+  
+      socket.on("disconnect", () => {
+        console.log("Desconectado do servidor");
+      });
+  
+      return () => {
+        if (socketRef.current) {
+          socketRef.current.disconnect();
+          console.log("Socket desconectado.");
+        }
+      };
+    }
+  }, [userId]);  
 
   const toggleSidebar = () => {
     setShowSidebar(!showSidebar);

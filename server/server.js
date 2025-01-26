@@ -495,33 +495,65 @@ app.get("/getrequests", async (req, res) => {
 });
 
 
-
 // Rota para processar a resposta do Venue para uma música específica
 app.post('/process-action', (req, res) => {
-  const { music_id, status_text, comentario } = req.body;
+  const { music_id, status_text, comentario, user_id } = req.body; // Adicionado user_id
+  
   // Validações iniciais
-  if (!music_id || !status_text || typeof comentario !== 'string') {
+  if (!music_id || !status_text || typeof comentario !== 'string' || !user_id) {
     return res.status(400).json({ message: 'Dados incompletos ou inválidos!' });
   }
 
-  // Atualizar status e comentário da música específica
-  const updateQuery = `
-      UPDATE Status_
-      SET status_text = ?, comentario = ?
-      WHERE music_id = ?`;
+  // Recuperar o nome da música usando o music_id
+  const musicQuery = `SELECT nome FROM Musicas_Requisicao WHERE id = ?`;
 
-  db.query(updateQuery, [status_text, comentario, music_id], (err, result) => {
+  db.query(musicQuery, [music_id], (err, result) => {
     if (err) {
-      console.error('Erro ao atualizar o status da música:', err);
+      console.error('Erro ao buscar o nome da música:', err);
       return res.status(500).json({ message: 'Erro interno no servidor!' });
     }
 
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ message: 'Música ou status não encontrado!' });
+    if (result.length === 0) {
+      return res.status(404).json({ message: 'Música não encontrada!' });
     }
 
-    // Resposta de sucesso
-    res.json({ message: 'Status da música atualizado com sucesso!' });
+    const musicName = result[0].nome;
+
+    // Atualizar status e comentário da música específica
+    const updateQuery = `
+        UPDATE Status_
+        SET status_text = ?, comentario = ?
+        WHERE music_id = ?`;
+
+    db.query(updateQuery, [status_text, comentario, music_id], (err, result) => {
+      if (err) {
+        console.error('Erro ao atualizar o status da música:', err);
+        return res.status(500).json({ message: 'Erro interno no servidor!' });
+      }
+
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ message: 'Música ou status não encontrado!' });
+      }
+
+      // Enviar atualização para a sala do usuário
+      const sala = `user-${user_id}`;
+      console.log(`Enviando resposta para a sala: ${sala}`);
+
+      // Ajustando a mensagem para incluir o nome da música
+      const actionMessage = status_text === 'approve' 
+        ? `A música "${musicName}" foi aceita!`
+        : `A música "${musicName}" foi rejeitada!`;
+
+      io.to(sala).emit("music-action-response", {
+        message: actionMessage,
+        music_id,
+        status_text,
+        comentario,
+      });
+
+      // Resposta de sucesso
+      res.json({ message: 'Status da música atualizado com sucesso!' });
+    });
   });
 });
 
