@@ -66,7 +66,7 @@ const RequestList = forwardRef(({ userId }, ref) => {
               key={request.requisicao_id}
               request={{ ...request, musicas: pendingMusicas }}
               onUpdateRequest={handleUpdateRequest}
-            />
+            /> 
           );
         })
         .filter(Boolean)}

@@ -10,7 +10,7 @@ const RequestItem = ({ request, onUpdateRequest }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedMusica, setSelectedMusica] = useState(null);
   const [currentAction, setCurrentAction] = useState(null); // Aprovar ou Negar
-
+  
   const handleOpenModal = (musica, action) => {
     setSelectedMusica(musica);
     setCurrentAction(action);
@@ -19,8 +19,9 @@ const RequestItem = ({ request, onUpdateRequest }) => {
 
   const handleSubmitComment = async (comment) => {
     const statusText = currentAction === "approve" ? "approve" : "deny";
-
+  
     try {
+      
       const response = await fetch("http://localhost:8081/process-action", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -28,17 +29,18 @@ const RequestItem = ({ request, onUpdateRequest }) => {
           music_id: selectedMusica.id, // Identificador da música
           status_text: statusText, // Texto do status ("approve" ou "deny")
           comentario: comment, // Comentário fornecido pelo usuário
+          user_id: cliente.id, // Identificador do cliente (adicionado aqui)
         }),
       });
-
+  
       const result = await response.json();
-
+  
       if (response.ok) {
         // Notificar com base na ação realizada
         const actionMessage =
           statusText === "approve" ? "Música Adicionada a Playlist!" : "Música Rejeitada!";
         toast.success(actionMessage);
-
+  
         // Atualizar a requisição com a música aprovada ou negada
         onUpdateRequest({
           ...request,
@@ -57,7 +59,7 @@ const RequestItem = ({ request, onUpdateRequest }) => {
     } finally {
       setIsModalOpen(false); // Fechar o modal após a tentativa
     }
-  };
+  };  
 
   return (
     <div className="request-item">
