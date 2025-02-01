@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
+import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useRequest } from "../../context/RequestContext"; // Importando o hook do contexto
 import axios from "axios";
 import { io } from "socket.io-client";
 import bin from "../../assets/bin.png";
@@ -12,18 +13,15 @@ import "react-toastify/dist/ReactToastify.css";
 
 const SOCKET_URL = process.env.REACT_APP_SOCKET_URL || "http://localhost:8081";
 
-export default function App() {
-  const [username, setUsername] = useState("");
-  const [userId, setUserId] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [songs, setSongs] = useState([]);
-  const [selected, setSelected] = useState([]);
-  const [serverResponse, setServerResponse] = useState(null);
+export default function HomeRequest() {
+  const { state, dispatch } = useRequest(); // Acessando o estado global do contexto
+  const { searchQuery, songs, selected, serverResponse } = state;
   const navigate = useNavigate();
   const storedToken = localStorage.getItem("token");
   const [isSearching, setIsSearching] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
   const socketRef = useRef(null);
+  const [userId, setUserId] = useState("");
 
   useEffect(() => {
     if (storedToken) {
@@ -35,7 +33,6 @@ export default function App() {
           localStorage.removeItem("token");
           navigate("/login");
         } else {
-          setUsername(decodedToken.username);
           setUserId(decodedToken.userId);
         }
       } catch (error) {
@@ -52,45 +49,34 @@ export default function App() {
     if (userId) {
       const socket = io(SOCKET_URL);
       socketRef.current = socket;
-  
+
       socket.on("connect", () => {
-        console.log("Conectado ao servidor:", socket.id);
         const roomId = `user-${userId}`;
-        socket.emit("join-room", roomId); // Entrar na sala associada ao usuário
-        console.log(`Solicitação para entrar na sala: ${roomId}`);
+        socket.emit("join-room", roomId);
       });
-  
+
       socket.on("music-action-response", (response) => {
-        console.log("Resposta do servidor para a música:", response);
-        
-        const { message, music_id, status_text, comentario } = response;
-  
-        // Exibir a mensagem dependendo do status
-        toast.success(message, {
-          position: "top-right",
-          autoClose: 5000,
-        });
+        toast.success(response.message, { position: "top-right", autoClose: 5000 });
       });
-  
+
       socket.on("disconnect", () => {
         console.log("Desconectado do servidor");
       });
-  
+
       return () => {
         if (socketRef.current) {
           socketRef.current.disconnect();
-          console.log("Socket desconectado.");
         }
       };
     }
-  }, [userId]);  
+  }, [userId]);
 
   const toggleSidebar = () => {
     setShowSidebar(!showSidebar);
   };
 
   const deleteSelectedSong = (id) => {
-    setSelected((current) => current.filter((s) => s.id !== id));
+    dispatch({ type: "REMOVE_SONG", payload: id });
     toast.info("Música removida da lista!");
   };
 
@@ -100,8 +86,7 @@ export default function App() {
       const response = await axios.post("http://localhost:8081/search", {
         query: searchQuery,
       });
-      setSongs(response.data);
-      setServerResponse(null);
+      dispatch({ type: "SET_SONGS", payload: response.data });
     } catch (error) {
       console.error("Erro ao buscar músicas:", error);
       toast.error("Erro ao buscar músicas. Tente novamente.");
@@ -117,16 +102,15 @@ export default function App() {
   };
 
   const handleSelectSong = (song) => {
-    if (!selected.some((s) => s.id === song.id)) {
-      setSelected([...selected, song]);
-      toast.success(`"${song.name}" adicionada à lista de requisições!`);
-    }
+    dispatch({ type: "ADD_SONG", payload: song });
+    toast.success(`"${song.name}" adicionada à lista de requisições!`);
   };
 
   const handleRequest = async () => {
     try {
       const token = localStorage.getItem("token");
       const venueId = 1;
+      console.log(selected)
       const response = await axios.post(
         "http://localhost:8081/request",
         {
@@ -141,8 +125,8 @@ export default function App() {
         }
       );
 
-      setServerResponse(response.data);
-      setSelected([]);
+      dispatch({ type: "SET_SERVER_RESPONSE", payload: response.data });
+      dispatch({ type: "RESET_SELECTED" });
       toast.success(response.data.message || "Requisição enviada!");
     } catch (error) {
       console.error("Erro ao enviar músicas:", error);
@@ -165,7 +149,7 @@ export default function App() {
               className="searchInput"
               placeholder="Pesquise uma música"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => dispatch({ type: "SET_SEARCH_QUERY", payload: e.target.value })}
               onKeyDown={handleKeyDown}
             />
           </div>

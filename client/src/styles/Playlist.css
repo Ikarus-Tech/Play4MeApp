@@ -10,6 +10,22 @@
     flex-direction: column;
 }
 
-.playlist-container h2{
+.playlist-container h2 {
     color: #d9a835;
+}
+
+.back-button {
+    background-color: #f0ba3d;
+    color: black;
+    border: none;
+    padding: 10px 15px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    transition: 0.3s;
+}
+
+.back-button:hover {
+    background-color: #d9a835;
 }

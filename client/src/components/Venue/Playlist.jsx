@@ -3,10 +3,12 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../../styles/Playlist.css";
 import { jwtDecode } from "jwt-decode";
+import { useNavigate } from "react-router-dom"; // Hook para navegação
 
 const Playlist = () => {
   const [musicas, setMusicas] = useState([]); // Músicas aprovadas
   const [loading, setLoading] = useState(true); // Controle de carregamento
+  const navigate = useNavigate();
 
   const fetchMusicas = async () => {
     try {
@@ -48,10 +50,20 @@ const Playlist = () => {
     fetchMusicas();
   }, []);
 
+  const handleBackClick = () => {
+    // Navega para a página inicial
+    navigate("/request-manager");
+  };
 
   return (
     <div className="playlist-container">
       <ToastContainer /> {/* Notificações de erro */}
+
+      {/* Botão de voltar */}
+      <button className="back-button" onClick={handleBackClick}>
+        ← Voltar
+      </button>
+
       <h2>Playlist</h2>
       {loading ? (
         <p>Carregando...</p>
