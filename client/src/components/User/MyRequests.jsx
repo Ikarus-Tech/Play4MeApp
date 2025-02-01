@@ -1,9 +1,11 @@
 import React, { useEffect, useState, useRef } from "react";
+import { useNavigate } from "react-router-dom"; // Hook para navegação
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../../styles/Playlist.css";
-import { jwtDecode } from "jwt-decode"; // Certifique-se de importar corretamente
-import { io } from "socket.io-client"; // Importar a biblioteca socket.io
+import { jwtDecode } from "jwt-decode"; // Decodificação do token JWT
+import { io } from "socket.io-client"; // Biblioteca Socket.IO
+import { useRequest } from "../../context/RequestContext"; // Importa o contexto
 
 const SOCKET_URL = process.env.REACT_APP_SOCKET_URL || "http://localhost:8081";
 
@@ -11,6 +13,9 @@ const Playlist = () => {
   const [musicas, setMusicas] = useState([]); // Músicas requisitadas
   const [loading, setLoading] = useState(true); // Controle de carregamento
   const socketRef = useRef(null); // Referência para o socket
+  const navigate = useNavigate(); // Hook para navegação
+
+  const { state, dispatch } = useRequest(); // Usa o contexto global
 
   // Função para buscar músicas requisitadas
   const fetchMusicas = async () => {
@@ -20,10 +25,7 @@ const Playlist = () => {
 
       // Decodifica o token JWT para acessar os dados no payload
       const decodedToken = jwtDecode(token);
-
-      // Acessa o userId no token
       const userId = decodedToken.userId;
-
       if (!userId) throw new Error("user_id não encontrado no token.");
 
       // Faz a requisição para buscar as músicas
@@ -32,7 +34,7 @@ const Playlist = () => {
         {
           method: "GET",
           headers: {
-            Authorization: `Bearer ${token}`, // Cabeçalho com token JWT
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -70,7 +72,7 @@ const Playlist = () => {
 
   // Conectar-se ao WebSocket para receber atualizações em tempo real
   useEffect(() => {
-    fetchMusicas(); // Carrega as músicas ao montar o componente
+    fetchMusicas();
 
     // Conectar ao WebSocket
     socketRef.current = io(SOCKET_URL);
@@ -82,32 +84,26 @@ const Playlist = () => {
       const userId = decodedToken.userId;
       const roomId = `user-${userId}`;
 
-      socketRef.current.emit("join-room", roomId); // Entrar na sala associada ao usuário
-      console.log(`Solicitação para entrar na sala: ${roomId}`);
+      socketRef.current.emit("join-room", roomId);
+      console.log(`Entrando na sala: ${roomId}`);
     });
 
     // Ouvir por atualizações de música (aceita ou rejeitada)
     socketRef.current.on("music-action-response", (response) => {
-      console.log("Resposta recebida para a música:", response);
-      const { message, music_id, status_text, comentario } = response;
+      console.log("Resposta recebida:", response);
+      const { message, music_id, status_text } = response;
 
-      // Atualiza o estado da música de acordo com a resposta do servidor
-      setMusicas((prevMusicas) => {
-        return prevMusicas.map((musica) =>
-          musica.id === music_id
-            ? { ...musica, status_text: status_text }
-            : musica
-        );
-      });
+      // Atualiza o estado da música conforme a resposta do servidor
+      setMusicas((prevMusicas) =>
+        prevMusicas.map((musica) =>
+          musica.id === music_id ? { ...musica, status_text } : musica
+        )
+      );
 
       // Exibe uma notificação
-      toast.success(message, {
-        position: "top-right",
-        autoClose: 5000,
-      });
+      toast.success(message, { position: "top-right", autoClose: 5000 });
     });
 
-    // Desconectar ao desmontar o componente
     return () => {
       if (socketRef.current) {
         socketRef.current.disconnect();
@@ -116,10 +112,23 @@ const Playlist = () => {
     };
   }, []);
 
+  // Função para lidar com o botão de voltar
+  const handleBackClick = () => {
+    // Navega para a página inicial
+    navigate("/home");
+  };
+
   return (
     <div className="playlist-container">
-      <ToastContainer /> {/* Notificações de erro */}
+      <ToastContainer />
+      
+      {/* Botão de voltar */}
+      <button className="back-button" onClick={handleBackClick}>
+        ← Voltar
+      </button>
+
       <h2>Minhas Requisições</h2>
+
       {loading ? (
         <p>Carregando...</p>
       ) : musicas.length > 0 ? (
