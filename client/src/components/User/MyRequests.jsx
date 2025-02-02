@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react"; 
 import { useNavigate } from "react-router-dom"; // Hook para navegação
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -12,6 +12,7 @@ const SOCKET_URL = process.env.REACT_APP_SOCKET_URL || "http://localhost:8081";
 const Playlist = () => {
   const [musicas, setMusicas] = useState([]); // Músicas requisitadas
   const [loading, setLoading] = useState(true); // Controle de carregamento
+  const [searchTerm, setSearchTerm] = useState(""); // Estado para o campo de pesquisa
   const socketRef = useRef(null); // Referência para o socket
   const navigate = useNavigate(); // Hook para navegação
 
@@ -138,10 +139,15 @@ const Playlist = () => {
     navigate("/home");
   };
 
+  // Filtra as músicas com base na pesquisa
+  const filteredMusicas = musicas.filter((musica) =>
+    musica.nome.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="playlist-container">
       <ToastContainer />
-      
+
       {/* Botão de voltar */}
       <button className="back-button" onClick={handleBackClick}>
         ← Voltar
@@ -149,11 +155,20 @@ const Playlist = () => {
 
       <h2>Minhas Requisições</h2>
 
+      {/* Barra de pesquisa */}
+      <input
+        type="text"
+        placeholder="Pesquisar música..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className="search-bar"
+      />
+
       {loading ? (
         <p>Carregando...</p>
-      ) : musicas.length > 0 ? (
+      ) : filteredMusicas.length > 0 ? (
         <div className="playlist-grid">
-          {musicas.map((musica) => (
+          {filteredMusicas.map((musica) => (
             <div key={musica.id} className="music-item">
               <img
                 src={musica.imagem || "https://via.placeholder.com/150"}

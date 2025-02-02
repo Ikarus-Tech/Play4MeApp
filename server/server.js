@@ -271,7 +271,7 @@ app.post("/search", async (req, res) => {
       params: {
         q: query,
         type: "track",
-        limit: 5,
+        limit: 30,
       },
     };
 
