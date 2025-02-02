@@ -286,7 +286,7 @@ app.post("/search", async (req, res) => {
   }
 });
 
-// Atualizar o endpoint `/request` para emitir eventos
+// Adiciona um novo request e avisa o Venue especifico
 app.post("/request", async (req, res) => {
   const { cliente_id, venue_id, musicas } = req.body;
   const token = req.headers["authorization"]?.split(" ")[1];
@@ -424,7 +424,7 @@ app.get("/getrequests", async (req, res) => {
           m.nome AS musica_nome,
           m.imagem AS musica_imagem,
           m.duracao AS musica_duracao,
-          s.status_text
+          s.status_text, s.data_resposta
         FROM Requisicoes r
         JOIN Usuario u ON r.cliente_id = u.id
         JOIN Venue v ON r.venue_id = v.id
@@ -479,6 +479,7 @@ app.get("/getrequests", async (req, res) => {
             imagem: row.musica_imagem,
             duracao: row.musica_duracao,
             status_text: row.status_text,
+            data_resposta: row.data_resposta,
           });
         }
 
@@ -498,7 +499,7 @@ app.get("/getrequests", async (req, res) => {
 // Rota para processar a resposta do Venue para uma música específica
 app.post('/process-action', (req, res) => {
   const { music_id, status_text, comentario, user_id } = req.body; // Adicionado user_id
-  
+
   // Validações iniciais
   if (!music_id || !status_text || typeof comentario !== 'string' || !user_id) {
     return res.status(400).json({ message: 'Dados incompletos ou inválidos!' });
@@ -521,11 +522,15 @@ app.post('/process-action', (req, res) => {
 
     // Atualizar status e comentário da música específica
     const updateQuery = `
-        UPDATE Status_
-        SET status_text = ?, comentario = ?
-        WHERE music_id = ?`;
+    UPDATE Status_
+    SET status_text = ?, comentario = ?, data_resposta = ?
+    WHERE music_id = ?`;
 
-    db.query(updateQuery, [status_text, comentario, music_id], (err, result) => {
+    const now = new Date();
+    const dataResposta = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")} ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}:${String(now.getSeconds()).padStart(2, "0")}`;
+    // Formato compatível com MySQL
+
+    db.query(updateQuery, [status_text, comentario, dataResposta, music_id], (err, result) => {
       if (err) {
         console.error('Erro ao atualizar o status da música:', err);
         return res.status(500).json({ message: 'Erro interno no servidor!' });
@@ -540,7 +545,7 @@ app.post('/process-action', (req, res) => {
       console.log(`Enviando resposta para a sala: ${sala}`);
 
       // Ajustando a mensagem para incluir o nome da música
-      const actionMessage = status_text === 'approve' 
+      const actionMessage = status_text === 'approve'
         ? `A música "${musicName}" foi aceita!`
         : `A música "${musicName}" foi rejeitada!`;
 
@@ -549,6 +554,7 @@ app.post('/process-action', (req, res) => {
         music_id,
         status_text,
         comentario,
+        data_resposta: dataResposta, // Enviando a data de resposta no evento
       });
 
       // Resposta de sucesso

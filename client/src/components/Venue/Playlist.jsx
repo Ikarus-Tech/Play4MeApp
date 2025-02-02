@@ -12,31 +12,37 @@ const Playlist = () => {
 
   const fetchMusicas = async () => {
     try {
-      const token = localStorage.getItem("token"); // Token JWT salvo
+      const token = localStorage.getItem("token");
       if (!token) throw new Error("Token não encontrado.");
 
-      //Decodifica o token JWT para acessar os dados no payload
       const decodedToken = jwtDecode(token);
-
-      // Acessa o venue_id do token (certifique-se de que o campo correto está no token)
       const venueId = decodedToken.id;
-
       if (!venueId) throw new Error("venue_id não encontrado no token.");
 
-      // Agora use o venueId na requisição
       const response = await fetch(`http://localhost:8081/getrequests?venue_id=${venueId}`, {
         method: "GET",
         headers: {
-          Authorization: `Bearer ${token}`, // Cabeçalho com token JWT
+          Authorization: `Bearer ${token}`,
         },
       });
 
       if (!response.ok) throw new Error("Erro ao carregar músicas.");
 
       const data = await response.json();
+
+      // Filtra apenas músicas aprovadas
       const approvedMusicas = data.flatMap((req) =>
-        req.musicas.filter((musica) => musica.status_text === "approve")
+        req.musicas
+          .filter((musica) => musica.status_text === "approve")
+          .map((musica) => ({
+            ...musica,
+            dataResposta: new Date(musica.data_resposta), // Converte a data para Date
+          }))
       );
+
+      // Ordena pela data de resposta mais recente
+      approvedMusicas.sort((a, b) => b.dataResposta - a.dataResposta);
+
       setMusicas(approvedMusicas);
     } catch (error) {
       console.error(error);
@@ -51,13 +57,12 @@ const Playlist = () => {
   }, []);
 
   const handleBackClick = () => {
-    // Navega para a página inicial
     navigate("/request-manager");
   };
 
   return (
     <div className="playlist-container">
-      <ToastContainer /> {/* Notificações de erro */}
+      <ToastContainer />
 
       {/* Botão de voltar */}
       <button className="back-button" onClick={handleBackClick}>
@@ -65,6 +70,7 @@ const Playlist = () => {
       </button>
 
       <h2>Playlist</h2>
+
       {loading ? (
         <p>Carregando...</p>
       ) : musicas.length > 0 ? (
@@ -92,7 +98,6 @@ const Playlist = () => {
         <p>Playlist vazia!</p>
       )}
     </div>
-
   );
 };
 
