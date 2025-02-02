@@ -47,8 +47,17 @@ const Playlist = () => {
           ...musica,
           venueNome: req.venue.nome, // Adiciona o nome da venue
           dataRequisicao: req.data_requisicao, // Adiciona a data da requisição
+          dataResposta: musica.data_resposta || null, // Adiciona a data da resposta para ordenação
         }))
       );
+
+      // Ordena as músicas pela dataResposta mais recente
+      allMusicas.sort((a, b) => {
+        const dateA = new Date(a.dataResposta || a.dataRequisicao);
+        const dateB = new Date(b.dataResposta || b.dataRequisicao);
+        return dateB - dateA; // Ordena da mais recente para a mais antiga
+      });
+
       setMusicas(allMusicas);
     } catch (error) {
       console.error(error);
@@ -91,14 +100,25 @@ const Playlist = () => {
     // Ouvir por atualizações de música (aceita ou rejeitada)
     socketRef.current.on("music-action-response", (response) => {
       console.log("Resposta recebida:", response);
-      const { message, music_id, status_text } = response;
+      const { message, music_id, status_text, data_resposta } = response;
 
       // Atualiza o estado da música conforme a resposta do servidor
-      setMusicas((prevMusicas) =>
-        prevMusicas.map((musica) =>
-          musica.id === music_id ? { ...musica, status_text } : musica
-        )
-      );
+      setMusicas((prevMusicas) => {
+        const updatedMusicas = prevMusicas.map((musica) =>
+          musica.id === music_id
+            ? { ...musica, status_text, dataResposta: data_resposta }
+            : musica
+        );
+
+        // Reordena após atualização
+        updatedMusicas.sort((a, b) => {
+          const dateA = new Date(a.dataResposta || a.dataRequisicao);
+          const dateB = new Date(b.dataResposta || b.dataRequisicao);
+          return dateB - dateA;
+        });
+
+        return updatedMusicas;
+      });
 
       // Exibe uma notificação
       toast.success(message, { position: "top-right", autoClose: 5000 });
@@ -147,7 +167,7 @@ const Playlist = () => {
                 </p>
                 <p className="venue-name">Venue: {musica.venueNome}</p>
                 <p className="request-date">
-                  Data: {formatarData(musica.dataRequisicao)}
+                  <strong>Requisitado em:</strong> {formatarData(musica.dataRequisicao)}
                 </p>
               </div>
             </div>

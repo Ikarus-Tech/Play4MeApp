@@ -54,7 +54,6 @@ ALTER TABLE Usuario ADD UNIQUE (email);
 ALTER TABLE Venue ADD UNIQUE (email);
 alter table usuario modify column email varchar(255);
 
-
 insert into Usuario values(default, "Felizardo77", "felizardopaulo40@gmail.com", "1234");
 insert into venue values(default, "Cais66", "Complexo coconuts, Av. da Marginal, Maputo", "cais66@gmail.com", "1234");
 
@@ -65,6 +64,7 @@ select * from musicas_requisicao;
 select * from status_;
 SELECT * FROM Usuario;
 SELECT * FROM Usuario WHERE email = 'test_email';
+select * from musicas;
 
 SELECT 
             r.requisicao_id,
@@ -87,3 +87,6 @@ SELECT
           LEFT JOIN Musicas_Requisicao mr ON r.requisicao_id = mr.requisicao_id
           LEFT JOIN Status_ s ON mr.id = s.music_id
           WHERE r.venue_id = 1 order by r.data_requisicao desc;
+          
+# Rodar esse Alter table abaixo
+alter table Status_ add column data_resposta TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
