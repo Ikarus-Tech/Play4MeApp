@@ -1,0 +1,143 @@
+:root {
+  --white-color: #fff;
+  --black-color: #000;
+  --secondary-color: #cca714;
+  --dimmed-color: #c6c6c6;
+  --dimmed-black-color: #1f1f1f;
+}
+
+main {
+  max-width: 100%;
+  margin: 0 auto;
+  background-color: var(--black-color);
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+#logo {
+  width: 100px;
+  display: block;
+  margin: 0 auto;
+}
+
+#profileIcon {
+  width: 28px;
+}
+
+#havingFunImage {
+  width: 300px;
+  border-radius: 888px;
+}
+
+.followBtn {
+  margin: 1rem;
+}
+
+.followBtn > button {
+  padding-right: 5rem;
+  padding-left: 5rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  background-color: var(--secondary-color);
+  color: var(--white-color);
+  border-radius: 30px;
+  font-weight: 500;
+  font-size: large;
+  cursor: pointer;
+}
+
+.searchContainer {
+  position: relative;
+  width: 100%;
+  max-width: 60%;
+}
+
+.searchInput {
+  width: 100%;
+  background-color: var(--dimmed-black-color);
+  color: var(--dimmed-color);
+  padding: 0.5rem;
+  border-radius: 1rem;
+  border: 1px solid var(--secondary-color);
+  transition: border-color 0.3s ease;
+  padding: 10px 15px 10px 40px;
+  outline: none;
+}
+
+.searchInput:focus {
+  border-color: #f0a500;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  color: var(--secondary-color);
+}
+
+.iconsContainer {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.icon {
+  font-size: 24px;
+  color: var(--secondary-color);
+}
+
+.heroSection {
+  max-width: 80%;
+  margin: 0 auto;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 1)),
+    url("../assets/partyImage.jpg");
+  background-size: cover;
+  background-position: center;
+  height: 80vh;
+  position: relative;
+}
+
+.profileDescription {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+  position: absolute;
+  top: 60%;
+  left: 50%; /* Centraliza horizontalmente */
+  transform: translate(-50%, -50%); /* Ajusta o centro do elemento */
+  z-index: 2;
+  text-align: center;
+  width: 100%;
+  max-width: 1200px;
+}
+
+.venueProfileDescription {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.venueProfileDescription h2 {
+  display: inline-block;
+  margin: 0 10px;
+}
+
+.paragraph{
+  width: 55%;
+}
+.paragraph p {
+  text-align: justify;
+}
+
+.flAndRq{
+  display: flex;
+  width: 50%;
+  justify-content: space-between;
+}

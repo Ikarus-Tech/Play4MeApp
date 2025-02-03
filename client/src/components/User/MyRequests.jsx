@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react"; 
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom"; // Hook para navegação
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -182,7 +182,8 @@ const Playlist = () => {
                 </p>
                 <p className="venue-name">Venue: {musica.venueNome}</p>
                 <p className="request-date">
-                  <strong>Requisitado em:</strong> {formatarData(musica.dataRequisicao)}
+                  <strong>Requisitado em:</strong>{" "}
+                  {formatarData(musica.dataRequisicao)}
                 </p>
               </div>
             </div>

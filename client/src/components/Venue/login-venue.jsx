@@ -28,7 +28,7 @@ const Login = () => {
         const decoded = jwtDecode(token);
 
         // Redireciona para o request manager com as informações do usuário no estado
-        navigate('/request-manager', { state: { nome: decoded.nome, id: decoded.id } });
+        navigate('/venue-profile', { state: { nome: decoded.nome, id: decoded.id } });
       })
       .catch(err => {
         if (err.response && err.response.status === 401) {

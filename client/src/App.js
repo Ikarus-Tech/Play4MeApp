@@ -12,6 +12,7 @@ import RequestManager from './components/Venue/Requests-Manager.jsx';
 import Playlist from './components/Venue/Playlist.jsx'
 import MyRequests from './components/User/MyRequests.jsx'
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import VenueProfile from './components/Venue/VenueProfile.jsx';
 
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
             <Route path='/regist' element={<Registration />} />
             <Route path='/home' element={<HomeRequest />} />
             <Route path='/request-manager' element={<RequestManager />} />
+            <Route path='/venue-profile' element = {<VenueProfile/>}></Route>
             <Route path='/playlist' element={<Playlist />} />
             <Route path='/my-requests' element={<MyRequests />} />
           </Routes>
