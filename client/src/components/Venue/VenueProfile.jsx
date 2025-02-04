@@ -1,6 +1,6 @@
 import logo from "../../assets/logo.png";
 import profileIcon from "../../assets/profileIcon.png";
-import havingFunImage from "../../assets/havingFunImage.webp";
+import cais66Image from "../../assets/cais66Image.png";
 import "boxicons/css/boxicons.min.css";
 import styles from "../../styles/VenueProfile.module.css";
 
@@ -28,9 +28,10 @@ export default function VenueProfile() {
       </header>
 
       <section className={styles.heroSection}></section>
+
       <div className={styles.profileDescription}>
         <div>
-          <img src={havingFunImage} alt="..." id={styles.havingFunImage} />
+          <img src={cais66Image} alt="Cais 66" id={styles.cais66Image} />
           <div className={styles.followBtn}>
             <button>Follow</button>
           </div>
@@ -47,7 +48,7 @@ export default function VenueProfile() {
               <h1>100</h1>
             </div>
           </div>
-          <div className = {styles.paragraph}>
+          <div className={styles.paragraph}>
             <p>
               Lorem, ipsum dolor sit amet consectetur adipisicing elit.
               Voluptatibus reiciendis beatae laudantium, ab itaque quaerat
@@ -57,6 +58,35 @@ export default function VenueProfile() {
           </div>
         </div>
       </div>
+
+      <section className={styles.requestAndTipWrapper}>
+        <div>
+          <button>Request a song</button>
+        </div>
+        <div>
+          <button>Send a "Thank You" tip</button>
+        </div>
+      </section>
+
+      <section className={styles.livePlace}>
+        <h1 className={styles.pin}>Cais 66 está em live agora</h1>
+      </section>
+
+      <div className={styles.liveDescription}>
+        <div className={styles.liveDescriptionContent}>
+          <div className={styles.liveDescriptionContent}>
+            <img src={cais66Image} alt="Cais 66" />
+            <h2>Descrição da live/Sessão</h2>
+            <h3>Género &gt; Afro</h3>
+            <h3>Tocando &gt; Nome da música </h3>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <p>Termos & Condições</p>
+        <p>Todos os direito reservados a Play 4 Me</p>
+      </footer>
     </main>
   );
 }
