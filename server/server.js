@@ -100,7 +100,7 @@ app.post('/google-login', async (req, res) => {
     }
 
     // Verifica se o usuário já existe
-    const sqlFindUser = "SELECT * FROM usuario WHERE email = ?";
+    const sqlFindUser = "SELECT * FROM Usuario WHERE email = ?";
     const [existingUser] = await db2.execute(sqlFindUser, [email]);
 
     let user;
@@ -110,7 +110,7 @@ app.post('/google-login', async (req, res) => {
       // Cria um novo usuário
       const hashedPassword = await bcrypt.hash(googleId, 10); // Hash temporário
       const sqlCreateUser = `
-        INSERT INTO usuario (username, email, pwd)
+        INSERT INTO Usuario (username, email, pwd)
         VALUES (?, ?, ?)
       `;
       await db2.execute(sqlCreateUser, [name, email, hashedPassword]);
@@ -134,7 +134,7 @@ app.post('/google-login', async (req, res) => {
 
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
-  const sql = "SELECT * FROM usuario WHERE email = ?";
+  const sql = "SELECT * FROM Usuario WHERE email = ?";
 
   db.query(sql, [email], async (err, data) => {
     if (err) {
@@ -162,7 +162,7 @@ app.post("/login", (req, res) => {
 
 app.post("/login-venue", (req, res) => {
   const { email, password } = req.body;
-  const sql = "SELECT * FROM venue WHERE email = ?";
+  const sql = "SELECT * FROM Venue WHERE email = ?";
 
   db.query(sql, [email], async (err, data) => {
     if (err) {
@@ -195,7 +195,7 @@ app.post("/register", async (req, res) => {
 
   // Verifica se o username já está em uso
   db.query(
-    "SELECT * FROM usuario WHERE username = ?",
+    "SELECT * FROM Usuario WHERE username = ?",
     [username],
     (err, result) => {
       if (err) return res.status(500).json("Erro no servidor");
@@ -206,7 +206,7 @@ app.post("/register", async (req, res) => {
 
       // Verifica se o email já está registrado
       db.query(
-        "SELECT * FROM usuario WHERE email = ?",
+        "SELECT * FROM Usuario WHERE email = ?",
         [email],
         async (err, result) => {
           if (err) return res.status(500).json("Erro no servidor");
@@ -222,7 +222,7 @@ app.post("/register", async (req, res) => {
 
             // Insere o novo usuário no banco de dados
             const sql =
-              "INSERT INTO usuario (username, email, pwd) VALUES (?, ?, ?)";
+              "INSERT INTO Usuario (username, email, pwd) VALUES (?, ?, ?)";
             const values = [username, email, hashedPassword];
 
             db.query(sql, values, (err, result) => {
