@@ -187,8 +187,10 @@ export default function HomeRequest() {
                   alt="Song Cover"
                   className="cover-image"
                 />
-                <h3>{song.name}</h3>
-                <p>{song.artists.map((artist) => artist.name).join(", ")}</p>
+                <div className="music-info">
+                  <h3>{song.name}</h3>
+                  <p>{song.artists.map((artist) => artist.name).join(", ")}</p>
+                </div>
               </li>
             ))
           ) : (
