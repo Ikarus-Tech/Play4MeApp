@@ -1,5 +1,5 @@
 import logo from "../../assets/logo.png";
-import profileIcon from "../../assets/profileIcon.png";
+// import profileIcon from "../../assets/profileIcon.png";
 import cais66Image from "../../assets/cais66Image.png";
 import "boxicons/css/boxicons.min.css";
 import styles from "../../styles/VenueProfile.module.css";
@@ -17,47 +17,47 @@ export default function VenueProfile() {
             className={styles.searchInput}
           />
         </div>
-        <div className={styles.iconsContainer}>
+        {/* <div className={styles.iconsContainer}>
           <i className={`bx bx-bell ${styles.icon}`}></i>
           <img
             src={profileIcon}
             id={styles.profileIcon}
             alt="Profile Icon"
           ></img>
-        </div>
+        </div> */}
       </header>
 
-      <section className={styles.heroSection}></section>
-
-      <div className={styles.profileDescription}>
-        <div>
-          <img src={cais66Image} alt="Cais 66" id={styles.cais66Image} />
-          <div className={styles.followBtn}>
-            <button>Follow</button>
-          </div>
-        </div>
-        <div className={styles.venueProfileDescription}>
-          <h1>DJ Plutônio</h1>
-          <div className={styles.flAndRq}>
-            <div className={styles.followers}>
-              <h3>Followers</h3>
-              <h1>50K</h1>
-            </div>
-            <div className={styles.requests}>
-              <h3>Requests</h3>
-              <h1>100</h1>
+      <section className={styles.heroSection}>
+        <div className={styles.profileDescription}>
+          <div>
+            <img src={cais66Image} alt="Cais 66" id={styles.cais66Image} />
+            <div className={styles.followBtn}>
+              <button>Follow</button>
             </div>
           </div>
-          <div className={styles.paragraph}>
-            <p>
-              Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-              Voluptatibus reiciendis beatae laudantium, ab itaque quaerat
-              obcaecati tenetur earum debitis unde distinctio iusto voluptatem
-              fuga quos praesentium molestiae! Veniam, ex facere.
-            </p>
+          <div className={styles.venueProfileDescription}>
+            <h1>DJ Plutônio</h1>
+            <div className={styles.flAndRq}>
+              <div className={styles.followers}>
+                <h3>Followers</h3>
+                <h1>50K</h1>
+              </div>
+              <div className={styles.requests}>
+                <h3>Requests</h3>
+                <h1>100</h1>
+              </div>
+            </div>
+            <div className={styles.paragraph}>
+              <p>
+                Lorem, ipsum dolor sit amet consectetur adipisicing elit.
+                Voluptatibus reiciendis beatae laudantium, ab itaque quaerat
+                obcaecati tenetur earum debitis unde distinctio iusto voluptatem
+                fuga quos praesentium molestiae! Veniam, ex facere.
+              </p>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
 
       <section className={styles.requestAndTipWrapper}>
         <div>
@@ -85,7 +85,7 @@ export default function VenueProfile() {
 
       <footer>
         <p>Termos & Condições</p>
-        <p>Todos os direito reservados a Play 4 Me</p>
+        <p>Todos os direitos reservados a Play 4 Me</p>
       </footer>
     </main>
   );
