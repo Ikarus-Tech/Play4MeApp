@@ -17,14 +17,14 @@ export default function VenueProfile() {
             className={styles.searchInput}
           />
         </div>
-        <div className={styles.iconsContainer}>
+        {/* <div className={styles.iconsContainer}>
           <i className={`bx bx-bell ${styles.icon}`}></i>
           <img
             src={profileIcon}
             id={styles.profileIcon}
             alt="Profile Icon"
           ></img>
-        </div>
+        </div> */}
       </header>
 
       <section className={styles.heroSection}></section>
@@ -85,7 +85,7 @@ export default function VenueProfile() {
 
       <footer>
         <p>Termos & Condições</p>
-        <p>Todos os direito reservados a Play 4 Me</p>
+        <p>Todos os direitos reservados a Play 4 Me</p>
       </footer>
     </main>
   );
