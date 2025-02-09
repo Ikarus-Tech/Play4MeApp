@@ -165,6 +165,24 @@ const MyRequests = () => {
       toast.success(message, { position: "top-right", autoClose: 5000 });
     });
 
+    // Ouvir por notificações de música tocada
+    socketRef.current.on("music-played", (response) => {
+      console.log("Notificação de música tocada recebida:", response);
+      const { message, music_id } = response;
+
+      // Atualiza o estado da música para tocada
+      setMusicas((prevMusicas) => {
+        const updatedMusicas = prevMusicas.map((musica) =>
+          musica.id === music_id ? { ...musica, played: true } : musica
+        );
+
+        return updatedMusicas;
+      });
+
+      // Exibe uma notificação
+      toast.success(message, { position: "top-right", autoClose: 5000 });
+    });
+
     return () => {
       if (socketRef.current) {
         socketRef.current.disconnect();
