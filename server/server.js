@@ -576,28 +576,51 @@ app.post("/process-action", (req, res) => {
 });
 
 // Rota para marcar a música como tocada
-app.post("/play-music", (req, res) => {
+app.post("/play-music", async (req, res) => {
   const { music_id } = req.body;
 
   if (!music_id) {
     return res.status(400).json({ message: "ID da música não fornecido!" });
   }
 
-  const updateQuery =
-    "UPDATE Musicas_Requisicao SET played = TRUE WHERE id = ?";
-
-  db.query(updateQuery, [music_id], (err, result) => {
-    if (err) {
-      console.error("Erro ao atualizar o status da música:", err);
-      return res.status(500).json({ message: "Erro interno no servidor!" });
-    }
+  try {
+    // Atualiza o status da música para tocada
+    const updateQuery =
+      "UPDATE Musicas_Requisicao SET played = TRUE WHERE id = ?";
+    const [result] = await db2.query(updateQuery, [music_id]);
 
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: "Música não encontrada!" });
     }
 
-    res.json({ message: "Música tocada!" });
-  });
+    // Recupera o ID do usuário dono da requisição
+    const userQuery = `
+      SELECT r.cliente_id, m.nome AS musica_nome
+      FROM Musicas_Requisicao m
+      JOIN Requisicoes r ON m.requisicao_id = r.requisicao_id
+      WHERE m.id = ?
+    `;
+    const [userRows] = await db2.query(userQuery, [music_id]);
+
+    if (userRows.length === 0) {
+      return res.status(404).json({ message: "Requisição não encontrada!" });
+    }
+
+    const userId = userRows[0].cliente_id;
+    const musicaNome = userRows[0].musica_nome;
+
+    // Envia uma notificação ao usuário dono da requisição
+    const sala = `user-${userId}`;
+    io.to(sala).emit("music-played", {
+      message: `A música "${musicaNome}" foi tocada!`,
+      music_id,
+    });
+
+    res.json({ message: "Música marcada como tocada!" });
+  } catch (error) {
+    console.error("Erro ao marcar a música como tocada:", error);
+    res.status(500).json({ message: "Erro interno no servidor!" });
+  }
 });
 
 // Rota para eliminar uma música da requisição
