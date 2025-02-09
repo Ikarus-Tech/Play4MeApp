@@ -36,9 +36,8 @@ io.on("connection", (socket) => {
   });
 });
 
-
 const SECRET_KEY = process.env.SECRET_KEY;
-const { OAuth2Client } = require('google-auth-library');
+const { OAuth2Client } = require("google-auth-library");
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 const CLIENT_ID = process.env.CLIENT_ID;
@@ -77,7 +76,7 @@ db.connect((err) => {
 });
 
 // Rota para Login com Google
-app.post('/google-login', async (req, res) => {
+app.post("/google-login", async (req, res) => {
   const { token } = req.body;
 
   if (!token) {
@@ -96,7 +95,9 @@ app.post('/google-login', async (req, res) => {
 
     // Verifica se o email está confirmado
     if (!payload.email_verified) {
-      return res.status(401).json({ message: "Email não verificado pelo Google" });
+      return res
+        .status(401)
+        .json({ message: "Email não verificado pelo Google" });
     }
 
     // Verifica se o usuário já existe
@@ -362,7 +363,7 @@ app.post("/request", async (req, res) => {
             }
             const clienteNome = clienteResult[0]?.username; // Ajuste aqui para 'username'
 
-            console.log(`Sala : veune-${venue_id}`)
+            console.log(`Sala : veune-${venue_id}`);
             // Emite o evento para o venue específico com o nome do cliente
             const sala = `venue-${venue_id}`;
             console.log(`Tentando enviar para a sala: ${sala}`);
@@ -372,7 +373,6 @@ app.post("/request", async (req, res) => {
               musicas,
               clienteNome,
             });
-
 
             res.json({ message: "Requisição Enviada!" });
           });
@@ -384,8 +384,6 @@ app.post("/request", async (req, res) => {
     res.status(401).json("Token inválido ou expirado");
   }
 });
-
-
 
 // Rota para retornar as requisições
 app.get("/getrequests", async (req, res) => {
@@ -478,10 +476,10 @@ app.get("/getrequests", async (req, res) => {
             nome: row.musica_nome,
             imagem: row.musica_imagem,
             duracao: row.musica_duracao,
-            played: row.musica_played,  // Inclui o campo played
+            played: row.musica_played, // Inclui o campo played
             status_text: row.status_text,
             data_resposta: row.data_resposta,
-            comentario: row.comentario,  // Inclui o campo comentario
+            comentario: row.comentario, // Inclui o campo comentario
           });
         }
 
@@ -498,12 +496,12 @@ app.get("/getrequests", async (req, res) => {
 });
 
 // Rota para processar a resposta do Venue para uma música específica
-app.post('/process-action', (req, res) => {
+app.post("/process-action", (req, res) => {
   const { music_id, status_text, comentario, user_id } = req.body; // Adicionado user_id
 
   // Validações iniciais
-  if (!music_id || !status_text || typeof comentario !== 'string' || !user_id) {
-    return res.status(400).json({ message: 'Dados incompletos ou inválidos!' });
+  if (!music_id || !status_text || typeof comentario !== "string" || !user_id) {
+    return res.status(400).json({ message: "Dados incompletos ou inválidos!" });
   }
 
   // Recuperar o nome da música usando o music_id
@@ -511,12 +509,12 @@ app.post('/process-action', (req, res) => {
 
   db.query(musicQuery, [music_id], (err, result) => {
     if (err) {
-      console.error('Erro ao buscar o nome da música:', err);
-      return res.status(500).json({ message: 'Erro interno no servidor!' });
+      console.error("Erro ao buscar o nome da música:", err);
+      return res.status(500).json({ message: "Erro interno no servidor!" });
     }
 
     if (result.length === 0) {
-      return res.status(404).json({ message: 'Música não encontrada!' });
+      return res.status(404).json({ message: "Música não encontrada!" });
     }
 
     const musicName = result[0].nome;
@@ -528,64 +526,118 @@ app.post('/process-action', (req, res) => {
     WHERE music_id = ?`;
 
     const now = new Date();
-    const dataResposta = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")} ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}:${String(now.getSeconds()).padStart(2, "0")}`;
+    const dataResposta = `${now.getFullYear()}-${String(
+      now.getMonth() + 1
+    ).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")} ${String(
+      now.getHours()
+    ).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}:${String(
+      now.getSeconds()
+    ).padStart(2, "0")}`;
     // Formato compatível com MySQL
 
-    db.query(updateQuery, [status_text, comentario, dataResposta, music_id], (err, result) => {
-      if (err) {
-        console.error('Erro ao atualizar o status da música:', err);
-        return res.status(500).json({ message: 'Erro interno no servidor!' });
+    db.query(
+      updateQuery,
+      [status_text, comentario, dataResposta, music_id],
+      (err, result) => {
+        if (err) {
+          console.error("Erro ao atualizar o status da música:", err);
+          return res.status(500).json({ message: "Erro interno no servidor!" });
+        }
+
+        if (result.affectedRows === 0) {
+          return res
+            .status(404)
+            .json({ message: "Música ou status não encontrado!" });
+        }
+
+        // Enviar atualização para a sala do usuário
+        const sala = `user-${user_id}`;
+        console.log(`Enviando resposta para a sala: ${sala}`);
+
+        // Ajustando a mensagem para incluir o nome da música
+        const actionMessage =
+          status_text === "approve"
+            ? `A música "${musicName}" foi aceita!`
+            : `A música "${musicName}" foi rejeitada!`;
+
+        io.to(sala).emit("music-action-response", {
+          message: actionMessage,
+          music_id,
+          status_text,
+          comentario,
+          data_resposta: dataResposta, // Enviando a data de resposta no evento
+        });
+
+        // Resposta de sucesso
+        res.json({ message: "Status da música atualizado com sucesso!" });
       }
-
-      if (result.affectedRows === 0) {
-        return res.status(404).json({ message: 'Música ou status não encontrado!' });
-      }
-
-      // Enviar atualização para a sala do usuário
-      const sala = `user-${user_id}`;
-      console.log(`Enviando resposta para a sala: ${sala}`);
-
-      // Ajustando a mensagem para incluir o nome da música
-      const actionMessage = status_text === 'approve'
-        ? `A música "${musicName}" foi aceita!`
-        : `A música "${musicName}" foi rejeitada!`;
-
-      io.to(sala).emit("music-action-response", {
-        message: actionMessage,
-        music_id,
-        status_text,
-        comentario,
-        data_resposta: dataResposta, // Enviando a data de resposta no evento
-      });
-
-      // Resposta de sucesso
-      res.json({ message: 'Status da música atualizado com sucesso!' });
-    });
+    );
   });
 });
 
 // Rota para marcar a música como tocada
-app.post('/play-music', (req, res) => {
+app.post("/play-music", (req, res) => {
   const { music_id } = req.body;
 
   if (!music_id) {
-    return res.status(400).json({ message: 'ID da música não fornecido!' });
+    return res.status(400).json({ message: "ID da música não fornecido!" });
   }
 
-  const updateQuery = 'UPDATE Musicas_Requisicao SET played = TRUE WHERE id = ?';
+  const updateQuery =
+    "UPDATE Musicas_Requisicao SET played = TRUE WHERE id = ?";
 
   db.query(updateQuery, [music_id], (err, result) => {
     if (err) {
-      console.error('Erro ao atualizar o status da música:', err);
-      return res.status(500).json({ message: 'Erro interno no servidor!' });
+      console.error("Erro ao atualizar o status da música:", err);
+      return res.status(500).json({ message: "Erro interno no servidor!" });
     }
 
     if (result.affectedRows === 0) {
-      return res.status(404).json({ message: 'Música não encontrada!' });
+      return res.status(404).json({ message: "Música não encontrada!" });
     }
 
-    res.json({ message: 'Música tocada!' });
+    res.json({ message: "Música tocada!" });
   });
+});
+
+// Rota para eliminar uma música da requisição
+app.delete("/delete-music", async (req, res) => {
+  const { music_id } = req.body;
+  const token = req.headers.authorization?.split(" ")[1]; // "Bearer token"
+
+  if (!token) {
+    return res
+      .status(401)
+      .json({ error: "Token de autorização não fornecido" });
+  }
+
+  try {
+    const decoded = jwt.verify(token, SECRET_KEY);
+    const userId = decoded.userId;
+
+    // Verifica se a música pertence ao usuário
+    const [rows] = await db2.query(
+      `SELECT r.cliente_id FROM Musicas_Requisicao m
+       JOIN Requisicoes r ON m.requisicao_id = r.requisicao_id
+       WHERE m.id = ?`,
+      [music_id]
+    );
+
+    if (rows.length === 0 || rows[0].cliente_id !== userId) {
+      return res.status(403).json({ error: "Acesso negado" });
+    }
+
+    // Exclui as entradas na tabela Status_ que referenciam a música
+    await db2.query(`DELETE FROM Status_ WHERE music_id = ?`, [music_id]);
+
+    // Elimina a música
+    await db2.query(`DELETE FROM Musicas_Requisicao WHERE id = ?`, [music_id]);
+
+    res.json({ message: "Música eliminada com sucesso" });
+  } catch (error) {
+    console.error("Erro ao eliminar música:", error);
+    res.status(500).json({ error: "Erro ao eliminar música" });
+  }
 });
 
 server.listen(8081, () => {

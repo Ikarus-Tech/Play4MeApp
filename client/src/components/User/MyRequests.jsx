@@ -87,6 +87,33 @@ const MyRequests = () => {
     });
   };
 
+  // Função para eliminar uma música
+  const handleDeleteMusic = async (musicId) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`http://localhost:8081/delete-music`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ music_id: musicId }),
+      });
+
+      if (!response.ok) throw new Error("Erro ao eliminar música.");
+
+      // Atualiza a lista de músicas após a eliminação
+      setMusicas((prevMusicas) =>
+        prevMusicas.filter((musica) => musica.id !== musicId)
+      );
+
+      toast.success("Música eliminada com sucesso.");
+    } catch (error) {
+      console.error(error);
+      toast.error("Erro ao eliminar música.");
+    }
+  };
+
   // Conectar-se ao WebSocket para receber atualizações em tempo real
   useEffect(() => {
     fetchMusicas();
@@ -108,13 +135,19 @@ const MyRequests = () => {
     // Ouvir por atualizações de música (aceita ou rejeitada)
     socketRef.current.on("music-action-response", (response) => {
       console.log("Resposta recebida:", response);
-      const { message, music_id, status_text, data_resposta, comentario } = response;
+      const { message, music_id, status_text, data_resposta, comentario } =
+        response;
 
       // Atualiza o estado da música conforme a resposta do servidor
       setMusicas((prevMusicas) => {
         const updatedMusicas = prevMusicas.map((musica) =>
           musica.id === music_id
-            ? { ...musica, status_text, dataResposta: data_resposta, comentario }
+            ? {
+                ...musica,
+                status_text,
+                dataResposta: data_resposta,
+                comentario,
+              }
             : musica
         );
 
@@ -190,7 +223,10 @@ const MyRequests = () => {
       ) : filteredMusicas.length > 0 ? (
         <div className="playlist-grid">
           {filteredMusicas.map((musica) => (
-            <div key={musica.id} className={`music-item ${musica.played ? "played" : ""}`}>
+            <div
+              key={musica.id}
+              className={`music-item ${musica.played ? "played" : ""}`}
+            >
               <img
                 src={musica.imagem || "https://via.placeholder.com/150"}
                 alt={musica.nome}
@@ -209,15 +245,23 @@ const MyRequests = () => {
                   </p>
                 )}
                 <div className="music-status-container">
-                  <p className={`music-status ${musica.status_text.toLowerCase()}`}>
+                  <p
+                    className={`music-status ${musica.status_text.toLowerCase()}`}
+                  >
                     {traduzirEstado(musica.status_text)}
                   </p>
-                  {musica.status_text.toLowerCase() !== "deny" && (
-                    musica.played ? (
+                  {musica.status_text.toLowerCase() !== "deny" &&
+                    (musica.played ? (
                       <i className="fas fa-music music-played-icon"></i>
                     ) : (
                       <i className="fas fa-clock music-not-played-icon"></i>
-                    )
+                    ))}
+                  {(musica.status_text.toLowerCase() === "approve" ||
+                    musica.status_text.toLowerCase() === "deny") && (
+                    <i
+                      className="fas fa-trash-alt music-delete-icon"
+                      onClick={() => handleDeleteMusic(musica.id)}
+                    ></i>
                   )}
                 </div>
               </div>
