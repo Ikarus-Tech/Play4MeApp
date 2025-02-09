@@ -47,20 +47,20 @@ create table Status_(
     status_text varchar(25) not null,
     comentario text,
     primary key(id),
-    foreign key(music_id) references Musicas_requisicao(id)
+    foreign key(music_id) references Musicas_Requisicao(id)
 );
 
 ALTER TABLE Usuario ADD UNIQUE (email);
 ALTER TABLE Venue ADD UNIQUE (email);
-alter table usuario modify column email varchar(255);
+alter table Usuario modify column email varchar(255);
 
 insert into Usuario values(default, "Felizardo77", "felizardopaulo40@gmail.com", "1234");
-insert into venue values(default, "Cais66", "Complexo coconuts, Av. da Marginal, Maputo", "cais66@gmail.com", "1234");
+insert into Venue values(default, "Cais66", "Complexo coconuts, Av. da Marginal, Maputo", "cais66@gmail.com", "1234");
 
-select * from usuario;
-select * from venue;
-select * from requisicoes;
-select * from musicas_requisicao;
+select * from Usuario;
+select * from Venue;
+select * from Requisicoes;
+select * from Musicas_Requisicao;
 select * from status_;
 SELECT * FROM Usuario;
 SELECT * FROM Usuario WHERE email = 'test_email';
@@ -88,5 +88,7 @@ SELECT
           LEFT JOIN Status_ s ON mr.id = s.music_id
           WHERE r.venue_id = 1 order by r.data_requisicao desc;
           
-# Rodar esse Alter table abaixo
 alter table Status_ add column data_resposta TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+
+#Update: Rodar esse alter table abaixo
+ALTER TABLE Musicas_Requisicao ADD COLUMN played BOOLEAN DEFAULT FALSE;

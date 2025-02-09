@@ -387,7 +387,6 @@ app.post("/request", async (req, res) => {
 
 
 
-//Rota para retornar as requisicoes
 // Rota para retornar as requisições
 app.get("/getrequests", async (req, res) => {
   try {
@@ -424,6 +423,7 @@ app.get("/getrequests", async (req, res) => {
           m.nome AS musica_nome,
           m.imagem AS musica_imagem,
           m.duracao AS musica_duracao,
+          m.played AS musica_played,  -- Inclui o campo played
           s.status_text, s.data_resposta
         FROM Requisicoes r
         JOIN Usuario u ON r.cliente_id = u.id
@@ -478,6 +478,7 @@ app.get("/getrequests", async (req, res) => {
             nome: row.musica_nome,
             imagem: row.musica_imagem,
             duracao: row.musica_duracao,
+            played: row.musica_played,  // Inclui o campo played
             status_text: row.status_text,
             data_resposta: row.data_resposta,
           });
@@ -494,7 +495,6 @@ app.get("/getrequests", async (req, res) => {
     res.status(500).json({ error: "Erro ao buscar requisições" });
   }
 });
-
 
 // Rota para processar a resposta do Venue para uma música específica
 app.post('/process-action', (req, res) => {
@@ -563,6 +563,29 @@ app.post('/process-action', (req, res) => {
   });
 });
 
+// Rota para marcar a música como tocada
+app.post('/play-music', (req, res) => {
+  const { music_id } = req.body;
+
+  if (!music_id) {
+    return res.status(400).json({ message: 'ID da música não fornecido!' });
+  }
+
+  const updateQuery = 'UPDATE Musicas_Requisicao SET played = TRUE WHERE id = ?';
+
+  db.query(updateQuery, [music_id], (err, result) => {
+    if (err) {
+      console.error('Erro ao atualizar o status da música:', err);
+      return res.status(500).json({ message: 'Erro interno no servidor!' });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Música não encontrada!' });
+    }
+
+    res.json({ message: 'Música tocada!' });
+  });
+});
 
 server.listen(8081, () => {
   console.log("Servidor HTTP rodando na porta 8081...");
