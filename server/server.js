@@ -424,7 +424,7 @@ app.get("/getrequests", async (req, res) => {
           m.imagem AS musica_imagem,
           m.duracao AS musica_duracao,
           m.played AS musica_played,  -- Inclui o campo played
-          s.status_text, s.data_resposta
+          s.status_text, s.data_resposta, s.comentario  -- Inclui o campo comentario
         FROM Requisicoes r
         JOIN Usuario u ON r.cliente_id = u.id
         JOIN Venue v ON r.venue_id = v.id
@@ -481,6 +481,7 @@ app.get("/getrequests", async (req, res) => {
             played: row.musica_played,  // Inclui o campo played
             status_text: row.status_text,
             data_resposta: row.data_resposta,
+            comentario: row.comentario,  // Inclui o campo comentario
           });
         }
 
