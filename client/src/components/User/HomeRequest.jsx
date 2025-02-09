@@ -56,7 +56,10 @@ export default function HomeRequest() {
       });
 
       socket.on("music-action-response", (response) => {
-        toast.success(response.message, { position: "top-right", autoClose: 5000 });
+        toast.success(response.message, {
+          position: "top-right",
+          autoClose: 5000,
+        });
       });
 
       socket.on("disconnect", () => {
@@ -110,7 +113,7 @@ export default function HomeRequest() {
     try {
       const token = localStorage.getItem("token");
       const venueId = 1;
-      console.log(selected)
+      console.log(selected);
       const response = await axios.post(
         "http://localhost:8081/request",
         {
@@ -149,7 +152,9 @@ export default function HomeRequest() {
               className="searchInput"
               placeholder="Pesquise uma música"
               value={searchQuery}
-              onChange={(e) => dispatch({ type: "SET_SEARCH_QUERY", payload: e.target.value })}
+              onChange={(e) =>
+                dispatch({ type: "SET_SEARCH_QUERY", payload: e.target.value })
+              }
               onKeyDown={handleKeyDown}
             />
           </div>
@@ -227,14 +232,14 @@ export default function HomeRequest() {
           ) : (
             <p>Nenhuma música selecionada</p>
           )}
+          <button
+            onClick={handleRequest}
+            disabled={selected.length === 0}
+            className="request-button"
+          >
+            Requisitar
+          </button>
         </div>
-        <button
-          onClick={handleRequest}
-          disabled={selected.length === 0}
-          className="request-button"
-        >
-          Requisitar
-        </button>
       </div>
     </div>
   );
