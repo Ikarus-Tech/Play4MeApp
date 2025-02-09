@@ -1,0 +1,84 @@
+/* Estilos para a seleção de role */
+.role-selection-container {
+  text-align: center;
+  color: #fff;
+  background-color: #141414e7;
+  padding: 40px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  max-width: 90%;
+  width: 400px;
+  margin: 10vh auto;
+}
+
+/* Título */
+.role-selection-container h1 {
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  color: #d9a835;
+}
+
+/* Estilizando os cards */
+.role-selection {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap; /* Garante adaptação em telas pequenas */
+}
+
+.role-card {
+  background-color: #1c1c1c;
+  width: 220px;
+  padding: 20px;
+  margin: 0 auto;
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease,
+    background-color 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #d9a835;
+  text-align: center;
+}
+
+/* Hover melhorado */
+.role-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+  background-color: #222; /* Mudança sutil no fundo */
+}
+
+/* Ícone */
+.role-card i {
+  font-size: 2.8rem;
+  color: #d9a835;
+  margin-bottom: 15px;
+}
+
+/* Títulos e texto */
+.role-card h2 {
+  font-size: 1.3rem;
+  color: #fff;
+  margin-bottom: 10px;
+}
+
+.role-card p {
+  font-size: 0.95rem;
+  color: #ccc;
+}
+
+/* Responsividade */
+@media (max-width: 600px) {
+  .role-selection {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .role-card {
+    width: 90%;
+    max-width: 300px;
+  }
+}
