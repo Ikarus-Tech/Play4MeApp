@@ -9,7 +9,7 @@ import { useRequest } from "../../context/RequestContext"; // Importa o contexto
 
 const SOCKET_URL = process.env.REACT_APP_SOCKET_URL || "http://localhost:8081";
 
-const Playlist = () => {
+const MyRequests = () => {
   const [musicas, setMusicas] = useState([]); // Músicas requisitadas
   const [loading, setLoading] = useState(true); // Controle de carregamento
   const [searchTerm, setSearchTerm] = useState(""); // Estado para o campo de pesquisa
@@ -43,13 +43,20 @@ const Playlist = () => {
       if (!response.ok) throw new Error("Erro ao carregar músicas.");
 
       const data = await response.json();
+      const twoWeeksAgo = new Date();
+      twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+
       const allMusicas = data.flatMap((req) =>
-        req.musicas.map((musica) => ({
-          ...musica,
-          venueNome: req.venue.nome, // Adiciona o nome da venue
-          dataRequisicao: req.data_requisicao, // Adiciona a data da requisição
-          dataResposta: musica.data_resposta || null, // Adiciona a data da resposta para ordenação
-        }))
+        req.musicas
+          .filter((musica) => new Date(req.data_requisicao) >= twoWeeksAgo)
+          .map((musica) => ({
+            ...musica,
+            venueNome: req.venue.nome, // Adiciona o nome da venue
+            dataRequisicao: req.data_requisicao, // Adiciona a data da requisição
+            dataResposta: musica.data_resposta || null, // Adiciona a data da resposta para ordenação
+            played: !!musica.played, // Converte o campo played para booleano
+            comentario: musica.comentario || "", // Adiciona o comentário da venue
+          }))
       );
 
       // Ordena as músicas pela dataResposta mais recente
@@ -80,6 +87,33 @@ const Playlist = () => {
     });
   };
 
+  // Função para eliminar uma música
+  const handleDeleteMusic = async (musicId) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`http://localhost:8081/delete-music`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ music_id: musicId }),
+      });
+
+      if (!response.ok) throw new Error("Erro ao eliminar música.");
+
+      // Atualiza a lista de músicas após a eliminação
+      setMusicas((prevMusicas) =>
+        prevMusicas.filter((musica) => musica.id !== musicId)
+      );
+
+      toast.success("Música eliminada com sucesso.");
+    } catch (error) {
+      console.error(error);
+      toast.error("Erro ao eliminar música.");
+    }
+  };
+
   // Conectar-se ao WebSocket para receber atualizações em tempo real
   useEffect(() => {
     fetchMusicas();
@@ -101,13 +135,19 @@ const Playlist = () => {
     // Ouvir por atualizações de música (aceita ou rejeitada)
     socketRef.current.on("music-action-response", (response) => {
       console.log("Resposta recebida:", response);
-      const { message, music_id, status_text, data_resposta } = response;
+      const { message, music_id, status_text, data_resposta, comentario } =
+        response;
 
       // Atualiza o estado da música conforme a resposta do servidor
       setMusicas((prevMusicas) => {
         const updatedMusicas = prevMusicas.map((musica) =>
           musica.id === music_id
-            ? { ...musica, status_text, dataResposta: data_resposta }
+            ? {
+                ...musica,
+                status_text,
+                dataResposta: data_resposta,
+                comentario,
+              }
             : musica
         );
 
@@ -137,6 +177,20 @@ const Playlist = () => {
   const handleBackClick = () => {
     // Navega para a página inicial
     navigate("/home");
+  };
+
+  // Função para traduzir o estado
+  const traduzirEstado = (estado) => {
+    switch (estado.toLowerCase()) {
+      case "approve":
+        return "Aprovado";
+      case "deny":
+        return "Rejeitado";
+      case "pending":
+        return "Pendente";
+      default:
+        return "Desconhecido";
+    }
   };
 
   // Filtra as músicas com base na pesquisa
@@ -169,7 +223,10 @@ const Playlist = () => {
       ) : filteredMusicas.length > 0 ? (
         <div className="playlist-grid">
           {filteredMusicas.map((musica) => (
-            <div key={musica.id} className="music-item">
+            <div
+              key={musica.id}
+              className={`music-item ${musica.played ? "played" : ""}`}
+            >
               <img
                 src={musica.imagem || "https://via.placeholder.com/150"}
                 alt={musica.nome}
@@ -177,14 +234,36 @@ const Playlist = () => {
               />
               <div className="music-details">
                 <p className="music-title">{musica.nome}</p>
-                <p className="music-status">
-                  Estado: {musica.status_text || "Desconhecido"}
-                </p>
                 <p className="venue-name">Venue: {musica.venueNome}</p>
                 <p className="request-date">
                   <strong>Requisitado em:</strong>{" "}
                   {formatarData(musica.dataRequisicao)}
                 </p>
+                {musica.comentario && (
+                  <p className="music-comment">
+                    <strong>Comentário:</strong> {musica.comentario}
+                  </p>
+                )}
+                <div className="music-status-container">
+                  <p
+                    className={`music-status ${musica.status_text.toLowerCase()}`}
+                  >
+                    {traduzirEstado(musica.status_text)}
+                  </p>
+                  {musica.status_text.toLowerCase() !== "deny" &&
+                    (musica.played ? (
+                      <i className="fas fa-music music-played-icon"></i>
+                    ) : (
+                      <i className="fas fa-clock music-not-played-icon"></i>
+                    ))}
+                  {(musica.status_text.toLowerCase() === "approve" ||
+                    musica.status_text.toLowerCase() === "deny") && (
+                    <i
+                      className="fas fa-trash-alt music-delete-icon"
+                      onClick={() => handleDeleteMusic(musica.id)}
+                    ></i>
+                  )}
+                </div>
               </div>
             </div>
           ))}
@@ -196,4 +275,4 @@ const Playlist = () => {
   );
 };
 
-export default Playlist;
+export default MyRequests;

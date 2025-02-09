@@ -61,6 +61,71 @@
     margin: 0;
 }
 
+.music-status-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.music-status {
+    font-size: 14px;
+    color: #ccc;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.music-status.approve {
+    background-color: #4caf50;
+    color: white;
+}
+
+.music-status.deny {
+    background-color: #f44336;
+    color: white;
+}
+
+.music-status.pending {
+    background-color: #555;
+    color: white;
+}
+
+.venue-name {
+    font-size: 14px;
+    color: #ccc;
+}
+
+.request-date {
+    font-size: 14px;
+    color: #ccc;
+}
+
+.music-played-icon {
+    font-size: 20px;
+    color: #4caf50;
+}
+
+.music-not-played-icon {
+    font-size: 20px;
+    color: #ff9800;
+}
+
+.music-delete-icon {
+    font-size: 20px;
+    color: #f44336;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.music-delete-icon:hover {
+    color: #ff0000;
+}
+
+.music-comment {
+    font-size: 14px;
+    color: #ccc;
+    margin-top: 5px;
+}
+
 .play-button {
     background-color: #d9a835;
     color: black;
