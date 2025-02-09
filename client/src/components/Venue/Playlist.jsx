@@ -30,13 +30,17 @@ const Playlist = () => {
 
       const data = await response.json();
 
-      // Filtra apenas músicas aprovadas
+      // Filtra apenas músicas aprovadas e com data de requisição dentro de duas semanas
+      const twoWeeksAgo = new Date();
+      twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+
       const approvedMusicas = data.flatMap((req) =>
         req.musicas
-          .filter((musica) => musica.status_text === "approve")
+          .filter((musica) => musica.status_text === "approve" && new Date(req.data_requisicao) >= twoWeeksAgo)
           .map((musica) => ({
             ...musica,
             dataResposta: new Date(musica.data_resposta), // Converte a data para Date
+            played: musica.played, // Inclui o campo played
           }))
       );
 
@@ -60,6 +64,31 @@ const Playlist = () => {
     navigate("/request-manager");
   };
 
+  const handlePlayClick = async (musicId) => {
+    try {
+      const response = await fetch("http://localhost:8081/play-music", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ music_id: musicId }),
+      });
+
+      if (!response.ok) throw new Error("Erro ao marcar a música como tocada.");
+
+      setMusicas((prevMusicas) =>
+        prevMusicas.map((musica) =>
+          musica.id === musicId ? { ...musica, played: true } : musica
+        )
+      );
+
+      toast.success("Música marcada como tocada!");
+    } catch (error) {
+      console.error(error);
+      toast.error("Erro ao marcar a música como tocada.");
+    }
+  };
+
   return (
     <div className="playlist-container">
       <ToastContainer />
@@ -78,7 +107,7 @@ const Playlist = () => {
           const duracaoEmSegundos = Math.floor(musica.duracao / 1000); // Converte milissegundos para segundos
 
           return (
-            <div key={musica.id} className="music-item">
+            <div key={musica.id} className={`music-item ${musica.played ? "played" : ""}`}>
               <img
                 src={musica.imagem || "https://via.placeholder.com/50"}
                 alt={musica.nome}
@@ -90,6 +119,13 @@ const Playlist = () => {
                   Duração: {Math.floor(duracaoEmSegundos / 60)}:
                   {String(duracaoEmSegundos % 60).padStart(2, "0")} min
                 </p>
+                <button
+                  className="play-button"
+                  onClick={() => handlePlayClick(musica.id)}
+                  disabled={musica.played}
+                >
+                  {musica.played ? "Tocada" : "Tocar"}
+                </button>
               </div>
             </div>
           );
