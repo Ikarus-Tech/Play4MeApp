@@ -1,4 +1,3 @@
-//import { useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -12,7 +11,8 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
-  const GOOGLE_CLIENT_ID= "95123885049-gssvaue3rorebrdfcobfc47oeu8pv8is.apps.googleusercontent.com"
+  const GOOGLE_CLIENT_ID = "95123885049-gssvaue3rorebrdfcobfc47oeu8pv8is.apps.googleusercontent.com";
+
   // Inicialização do GAPI
   useEffect(() => {
     const initClient = () => {
@@ -40,7 +40,7 @@ const Login = () => {
         const { userId, username } = decodedToken;
 
         localStorage.setItem("token", token);
-        navigate("/home", { state: { username, userId } });
+        navigate("/venue-profile", { state: { username, userId } });
       })
       .catch((err) => {
         if (err.response && err.response.status === 401) {
@@ -54,21 +54,21 @@ const Login = () => {
   // Função para login com Google
   const loginWithGoogle = () => {
     const auth2 = gapi.auth2.getAuthInstance();
-  
-    auth2.signIn({ prompt: "select_account" }).then(async (googleUser) => {  
+
+    auth2.signIn({ prompt: "select_account" }).then(async (googleUser) => {
       const idToken = googleUser.getAuthResponse().id_token; // Obtém o ID Token
-  
+
       try {
         const res = await axios.post("http://localhost:8081/google-login", {
           token: idToken, // Envia o ID Token para o backend
         });
-  
+
         const { token } = res.data; // Token JWT gerado pelo backend
         const decodedToken = jwtDecode(token);
         const { userId, username } = decodedToken;
-  
+
         localStorage.setItem("token", token);
-        navigate("/home", { state: { username, userId } });
+        navigate("/venue-profile", { state: { username, userId } });
       } catch (error) {
         console.error("Erro ao autenticar com Google:", error);
         setMessage("Erro no login com o Google. Tente novamente.");
@@ -77,7 +77,7 @@ const Login = () => {
       console.error("Erro ao fazer login com Google:", error);
       setMessage("Erro ao fazer login. Tente novamente.");
     });
-  };  
+  };
 
   return (
     <div className="auth">
