@@ -1,10 +1,17 @@
+import React from "react";
+import { useNavigate } from "react-router-dom";
 import logo from "../../assets/logo.png";
-// import profileIcon from "../../assets/profileIcon.png";
 import cais66Image from "../../assets/cais66Image.png";
 import "boxicons/css/boxicons.min.css";
 import styles from "../../styles/VenueProfile.module.css";
 
 export default function VenueProfile() {
+  const navigate = useNavigate();
+
+  const handleRequestSong = () => {
+    navigate("/home");
+  };
+
   return (
     <main>
       <img src={logo} alt="Play 4 me Logo" id={styles.logo} />
@@ -17,14 +24,6 @@ export default function VenueProfile() {
             className={styles.searchInput}
           />
         </div>
-        {/* <div className={styles.iconsContainer}>
-          <i className={`bx bx-bell ${styles.icon}`}></i>
-          <img
-            src={profileIcon}
-            id={styles.profileIcon}
-            alt="Profile Icon"
-          ></img>
-        </div> */}
       </header>
 
       <section className={styles.heroSection}>
@@ -61,7 +60,7 @@ export default function VenueProfile() {
 
       <section className={styles.requestAndTipWrapper}>
         <div>
-          <button>Request a song</button>
+          <button onClick={handleRequestSong}>Request a song</button>
         </div>
         <div>
           <button>Send a "Thank You" tip</button>
