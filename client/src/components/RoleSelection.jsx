@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import 'boxicons/css/boxicons.min.css';
-import '../index.css';
+import "../styles/role-selector.css"
 
 function RoleSelection() {
   const navigate = useNavigate();

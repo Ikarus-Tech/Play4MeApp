@@ -15,12 +15,43 @@ const Modal = ({ isOpen, onClose, onSubmit, title, placeholder }) => {
     }
   };
 
+  const handleReadyResponse = (response) => {
+    setComment(response);
+  };
+
   if (!isOpen) return null;
 
   return (
     <div className="modal-overlay">
       <div className="modal-content">
         <h3>{title}</h3>
+        <div className="ready-responses">
+          <button onClick={() => handleReadyResponse("Boa escolha!")}>
+            Boa escolha!
+          </button>
+          <button onClick={() => handleReadyResponse("Ótimo!")}>Ótimo!</button>
+          <button onClick={() => handleReadyResponse("Excelente!")}>
+            Excelente!
+          </button>
+          <button
+            className="negative"
+            onClick={() => handleReadyResponse("Não gostei.")}
+          >
+            Não gostei.
+          </button>
+          <button
+            className="negative"
+            onClick={() => handleReadyResponse("Péssima escolha.")}
+          >
+            Péssima escolha.
+          </button>
+          <button
+            className="negative"
+            onClick={() => handleReadyResponse("Não é o meu estilo.")}
+          >
+            Não é o meu estilo.
+          </button>
+        </div>
         <textarea
           placeholder={placeholder}
           value={comment}

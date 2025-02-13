@@ -4,15 +4,15 @@ import RequestItem from "./RequestItem";
 
 const SOCKET_URL = process.env.REACT_APP_SOCKET_URL || "http://localhost:8081";
 
-const RequestList = forwardRef(({ userId }, ref) => {
+const RequestList = forwardRef(({ userId, searchTerm }, ref) => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Função para buscar as requisições
+  // Função para buscar as requisições com base no userId (da venue)
   const fetchRequests = async () => {
     try {
-      const response = await axios.get("http://localhost:8081/getrequests", {
+      const response = await axios.get(`http://localhost:8081/getrequests?venue_id=${userId}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -28,8 +28,10 @@ const RequestList = forwardRef(({ userId }, ref) => {
 
   // Buscar as requisições ao montar o componente
   useEffect(() => {
-    fetchRequests();
-  }, []);
+    if (userId) {
+      fetchRequests(); // Passar o userId para buscar as requisições relacionadas ao usuário (da venue)
+    }
+  }, [userId]);
 
   const handleUpdateRequest = (updatedRequest) => {
     // Recarregar as requisições após uma nova requisição ser recebida
@@ -41,6 +43,11 @@ const RequestList = forwardRef(({ userId }, ref) => {
     handleUpdateRequest,
   }));
 
+  // Função para filtrar as requisições com base no nome do cliente
+  const filteredRequests = requests.filter((request) =>
+    request.cliente.nome.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   if (loading) {
     return <div>Carregando...</div>;
   }
@@ -51,7 +58,7 @@ const RequestList = forwardRef(({ userId }, ref) => {
 
   return (
     <div className="request-list">
-      {requests
+      {filteredRequests
         .map((request) => {
           const pendingMusicas = request.musicas.filter(
             (musica) => musica.status_text === "PENDING"

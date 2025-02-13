@@ -28,7 +28,7 @@ const Login = () => {
         const decoded = jwtDecode(token);
 
         // Redireciona para o request manager com as informações do usuário no estado
-        navigate('/request-manager', { state: { nome: decoded.nome, id: decoded.id } });
+        navigate('/request-manager');
       })
       .catch(err => {
         if (err.response && err.response.status === 401) {
@@ -40,7 +40,7 @@ const Login = () => {
   }
 
   return (
-    <div className="login-container">
+    <div className="auth-container">
       <img src={logo} alt="Play 4 Me Logo" />
       <h2>Welcome Back</h2>
       <p>Please login with registered account</p>

@@ -1,108 +1,144 @@
-/* Container da barra de pesquisa */
+/* 🔍 Barra de pesquisa */
 .Requests .search-bar_ {
-    padding: 20px;
-    width: 100%;
+  padding: 20px;
+  width: 100%;
 }
 
-.Requests .search-bar-container{
-    display: flex;
-    width: fit-content;
-    margin-left: auto;
-    margin-right: auto;
-    
-    width: 60%;
+.Requests .search-bar-container {
+  display: flex;
+  width: 60%;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
-.Requests .search-bar_ input {
-    width: 100%;
-    padding: 10px;
-    border-radius: 20px;
-    border: solid 1px #d9a835;
-    font-size: 16px;
-    background-color: #1c1c1c;
-    color: #fff;
-    
+.Requests .search-bar input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 25px;
+  border: 2px solid #d9a835;
+  font-size: 16px;
+  background-color: #252525;
+  color: #fff;
+  outline: none;
+  transition: all 0.3s ease-in-out;
 }
 
+.Requests .search-bar input:focus {
+  border-color: #ffc107;
+  box-shadow: 0 0 10px rgba(217, 168, 53, 0.5);
+}
+
+/* 🎵 Lista de pedidos */
 .Requests .request-list {
-    padding: 20px;
-    width: 100%;
-    max-width: 800px;
-    margin: 0 auto;
+  padding: 20px;
+  width: 50%;
+  margin: 0 auto;
 }
 
+/* 📌 Estilização dos itens da lista */
 .Requests .request-item {
-    display: flex;
-    margin-bottom: 20px;
-    flex-wrap: wrap; /* Permite que o conteúdo seja quebrado em telas pequenas */
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  background: #1c1c1c;
+  
+  border-radius: 10px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  border-left: 5px solid #d9a835;
+  transition: all 0.3s ease;
 }
 
-.Requests footer {
-    padding: 10px;
-    text-align: center;
-    font-size: 1rem;
-    color: #ccc;
+/* 🎭 Avatar */
+.Requests .avatar-placeholder {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #d9a835;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  color: #1c1c1c;
+  font-size: 18px;
+  margin-right: 10px;
 }
 
-/* Estilo responsivo */
-@media (max-width: 768px) {
-    .Requests .request-item {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .Requests .request-details {
-        margin-left: 0;
-        margin-top: 10px;
-    }
-
-    .Requests .search-bar input {
-        width: 90%;
-    }
-
-    .Requests .request-status {
-        margin-left: 0;
-        margin-top: 10px;
-    }
+/* 🏷️ Informações da música */
+.Requests .request-details img {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
 }
 
-@media (max-width: 480px) {
-    .Requests .avatar-placeholder {
-        width: 40px;
-        height: 40px;
-    }
-
-    .Requests .request-details img {
-        width: 60px;
-        height: 60px;
-    }
-
-    .Requests .song-details span {
-        font-size: 10px;
-    }
-
-    .Requests .request-status {
-        font-size: 12px;
-    }
+.Requests .song-details span {
+  font-size: 14px;
+  color: #fff;
 }
 
+/* 📌 Status */
+.Requests .request-status {
+  font-size: 14px;
+  font-weight: bold;
+  color: #d9a835;
+}
+
+/* 🎛️ Ícone da Playlist */
 .playlist-icon {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: #d9a835;
-    padding: 5px;
-    margin-left: 4px;
-    font-size: 1.5rem; /* Ajuste o tamanho do ícone */
-    display: flex;
-    align-items: center;
-    transition: color 0.3s ease;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #d9a835;
+  padding: 5px;
+  margin-left: 4px;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  transition: color 0.3s ease;
 }
 
 .playlist-icon:hover {
-    color: #c2942f;
+  color: #c2942f;
 }
 
-.playlist-icon:focus {
-    outline: none;
+/* 📱 Estilos Responsivos */
+@media (max-width: 1024px) {
+  .Requests .search-bar-container {
+    width: 80%;
+  }
+}
+
+@media (max-width: 768px) {
+  .Requests .request-item {
+    flex-direction: column;
+    align-items: center;
+
+  }
+  /* 🎵 Lista de pedidos */
+  .Requests .request-list {
+    width: 80%;
+  }
+}
+
+@media (max-width: 480px) {
+  .Requests .request-list {
+    width: 90%;
+  }
+  .Requests .avatar-placeholder {
+    width: 40px;
+    height: 40px;
+  }
+
+  .Requests .request-details img {
+    width: 60px;
+    height: 60px;
+  }
+
+  .Requests .song-details span {
+    font-size: 12px;
+  }
+
+  .Requests .request-status {
+    font-size: 12px;
+  }
 }

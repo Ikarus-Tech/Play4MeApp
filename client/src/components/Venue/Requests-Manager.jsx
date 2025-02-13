@@ -3,16 +3,17 @@ import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { io } from "socket.io-client";
 import "react-toastify/dist/ReactToastify.css";
-import SearchBar from "./SearchBar.jsx";
 import RequestList from "./RequestList.jsx";
 import Footer from "./Footer.jsx";
 import "../../styles/RequestManager.css";
+import "../../styles/Playlist.css"
 import { ToastContainer, toast } from "react-toastify";
 
 const SOCKET_URL = process.env.REACT_APP_SOCKET_URL || "http://localhost:8081";
 
 function RequestManager() {
   const [userId, setUserId] = useState(null);
+  const [searchTerm, setSearchTerm] = useState(""); // Estado para o campo de pesquisa
   const navigate = useNavigate();
   const requestListRef = useRef(null); // Ref para o componente RequestList
   const socketRef = useRef(null); // Ref para manter a instância do socket
@@ -101,10 +102,22 @@ function RequestManager() {
     }
   }, [userId]);
 
+  // Função para filtrar as requisições com base no nome do cliente
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value);
+  };
+
   return (
     <div className="Requests">
       <div className="search-bar-container">
-        <SearchBar userId={userId} />
+        {/* Barra de pesquisa para o nome do cliente */}
+        <input
+          type="text"
+          placeholder="Pesquisar por nome do cliente..."
+          value={searchTerm}
+          onChange={handleSearchChange}
+          className="search-bar"
+        />
         <button
           className="playlist-icon"
           onClick={() => navigate("/playlist")}
@@ -116,11 +129,11 @@ function RequestManager() {
           />
         </button>
       </div>
-      <RequestList ref={requestListRef} userId={userId} />
+      {/* Passa o filtro de pesquisa para a lista de requisições */}
+      <RequestList ref={requestListRef} userId={userId} searchTerm={searchTerm} />
       <Footer />
       <ToastContainer />
     </div>
-    
   );
 }
 

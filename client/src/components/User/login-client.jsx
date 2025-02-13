@@ -1,4 +1,3 @@
-//import { useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -12,7 +11,8 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
-  const GOOGLE_CLIENT_ID= "95123885049-gssvaue3rorebrdfcobfc47oeu8pv8is.apps.googleusercontent.com"
+  const GOOGLE_CLIENT_ID = "95123885049-gssvaue3rorebrdfcobfc47oeu8pv8is.apps.googleusercontent.com";
+
   // Inicialização do GAPI
   useEffect(() => {
     const initClient = () => {
@@ -40,7 +40,7 @@ const Login = () => {
         const { userId, username } = decodedToken;
 
         localStorage.setItem("token", token);
-        navigate("/home", { state: { username, userId } });
+        navigate("/venue-profile", { state: { username, userId } });
       })
       .catch((err) => {
         if (err.response && err.response.status === 401) {
@@ -55,7 +55,7 @@ const Login = () => {
   const loginWithGoogle = () => {
     const auth2 = gapi.auth2.getAuthInstance();
 
-    auth2.signIn().then(async (googleUser) => {
+    auth2.signIn({ prompt: "select_account" }).then(async (googleUser) => {
       const idToken = googleUser.getAuthResponse().id_token; // Obtém o ID Token
 
       try {
@@ -68,7 +68,7 @@ const Login = () => {
         const { userId, username } = decodedToken;
 
         localStorage.setItem("token", token);
-        navigate("/home", { state: { username, userId } });
+        navigate("/venue-profile", { state: { username, userId } });
       } catch (error) {
         console.error("Erro ao autenticar com Google:", error);
         setMessage("Erro no login com o Google. Tente novamente.");
@@ -80,43 +80,45 @@ const Login = () => {
   };
 
   return (
-    <div className="auth-container">
-      <img src={logo} alt="Play 4 Me Logo" />
-      <h2>Welcome Back</h2>
-      <p>Please login with registered account</p>
-      <form onSubmit={handleSubmit}>
-        <div className="input-group">
-          <i className="bi bi-envelope"></i>
-          <input
-            type="email"
-            placeholder="Email"
-            required
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
-        <div className="input-group">
-          <i className="bi bi-lock"></i>
-          <input
-            type="password"
-            placeholder="Password"
-            required
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
-        <button type="submit" className="btn">Login</button>
-        {message && <p className="message">{message}</p>}
-        <p>Or using other method</p>
-        <button
-          type="button"
-          className="btn btn-alt social-btns"
-          onClick={() => loginWithGoogle()}
-        >
-          <i className="bi bi-google"></i> Sign Up with Google
-        </button>
-        <p>
-          Don&apos;t have an account? <Link to="/regist">Sign up</Link>
-        </p>
-      </form>
+    <div className="auth">
+      <div className="auth-container">
+        <img src={logo} alt="Play 4 Me Logo" />
+        <h2>Welcome Back</h2>
+        <p>Please login with registered account</p>
+        <form onSubmit={handleSubmit}>
+          <div className="input-group">
+            <i className="bi bi-envelope"></i>
+            <input
+              type="email"
+              placeholder="Email"
+              required
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+          <div className="input-group">
+            <i className="bi bi-lock"></i>
+            <input
+              type="password"
+              placeholder="Password"
+              required
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+          <button type="submit" className="btn">Login</button>
+          {message && <p className="message">{message}</p>}
+          <p>Or using other method</p>
+          <button
+            type="button"
+            className="btn btn-alt social-btns"
+            onClick={() => loginWithGoogle()}
+          >
+            <i className="bi bi-google"></i> Sign Up with Google
+          </button>
+          <p>
+            Don&apos;t have an account? <Link to="/regist">Sign up</Link>
+          </p>
+        </form>
+      </div>
     </div>
   );
 };

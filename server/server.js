@@ -36,19 +36,19 @@ io.on("connection", (socket) => {
   });
 });
 
-
 const SECRET_KEY = process.env.SECRET_KEY;
-const { OAuth2Client } = require('google-auth-library');
+const { OAuth2Client } = require("google-auth-library");
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
 
 const db = mysql.createConnection({
-  host: process.env.HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_KEY,
-  database: process.env.DB,
+  host: process.env.DB_HOST || "your-railway-host",
+  user: process.env.DB_USER || "your-railway-user",
+  password: process.env.DB_PASSWORD || "your-railway-password",
+  database: process.env.DB_NAME || "your-railway-database",
+  port: process.env.DB_PORT || 3306,
 });
 
 let db2;
@@ -56,10 +56,11 @@ let db2;
 (async () => {
   try {
     db2 = await mysql2.createPool({
-      host: process.env.HOST,
-      user: process.env.DB_USER,
-      password: process.env.DB_KEY,
-      database: process.env.DB,
+      host: process.env.DB_HOST || "your-railway-host",
+      user: process.env.DB_USER || "your-railway-user",
+      password: process.env.DB_PASSWORD || "your-railway-password",
+      database: process.env.DB_NAME || "your-railway-database",
+      port: process.env.DB_PORT || 3306,
     });
     console.log("Conexão com o banco de dados (db2) inicializada.");
   } catch (err) {
@@ -77,7 +78,7 @@ db.connect((err) => {
 });
 
 // Rota para Login com Google
-app.post('/google-login', async (req, res) => {
+app.post("/google-login", async (req, res) => {
   const { token } = req.body;
 
   if (!token) {
@@ -96,11 +97,13 @@ app.post('/google-login', async (req, res) => {
 
     // Verifica se o email está confirmado
     if (!payload.email_verified) {
-      return res.status(401).json({ message: "Email não verificado pelo Google" });
+      return res
+        .status(401)
+        .json({ message: "Email não verificado pelo Google" });
     }
 
     // Verifica se o usuário já existe
-    const sqlFindUser = "SELECT * FROM usuario WHERE email = ?";
+    const sqlFindUser = "SELECT * FROM Usuario WHERE email = ?";
     const [existingUser] = await db2.execute(sqlFindUser, [email]);
 
     let user;
@@ -110,7 +113,7 @@ app.post('/google-login', async (req, res) => {
       // Cria um novo usuário
       const hashedPassword = await bcrypt.hash(googleId, 10); // Hash temporário
       const sqlCreateUser = `
-        INSERT INTO usuario (username, email, pwd)
+        INSERT INTO Usuario (username, email, pwd)
         VALUES (?, ?, ?)
       `;
       await db2.execute(sqlCreateUser, [name, email, hashedPassword]);
@@ -134,7 +137,7 @@ app.post('/google-login', async (req, res) => {
 
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
-  const sql = "SELECT * FROM usuario WHERE email = ?";
+  const sql = "SELECT * FROM Usuario WHERE email = ?";
 
   db.query(sql, [email], async (err, data) => {
     if (err) {
@@ -162,7 +165,7 @@ app.post("/login", (req, res) => {
 
 app.post("/login-venue", (req, res) => {
   const { email, password } = req.body;
-  const sql = "SELECT * FROM venue WHERE email = ?";
+  const sql = "SELECT * FROM Venue WHERE email = ?";
 
   db.query(sql, [email], async (err, data) => {
     if (err) {
@@ -195,7 +198,7 @@ app.post("/register", async (req, res) => {
 
   // Verifica se o username já está em uso
   db.query(
-    "SELECT * FROM usuario WHERE username = ?",
+    "SELECT * FROM Usuario WHERE username = ?",
     [username],
     (err, result) => {
       if (err) return res.status(500).json("Erro no servidor");
@@ -206,7 +209,7 @@ app.post("/register", async (req, res) => {
 
       // Verifica se o email já está registrado
       db.query(
-        "SELECT * FROM usuario WHERE email = ?",
+        "SELECT * FROM Usuario WHERE email = ?",
         [email],
         async (err, result) => {
           if (err) return res.status(500).json("Erro no servidor");
@@ -222,7 +225,7 @@ app.post("/register", async (req, res) => {
 
             // Insere o novo usuário no banco de dados
             const sql =
-              "INSERT INTO usuario (username, email, pwd) VALUES (?, ?, ?)";
+              "INSERT INTO Usuario (username, email, pwd) VALUES (?, ?, ?)";
             const values = [username, email, hashedPassword];
 
             db.query(sql, values, (err, result) => {
@@ -271,7 +274,7 @@ app.post("/search", async (req, res) => {
       params: {
         q: query,
         type: "track",
-        limit: 5,
+        limit: 30,
       },
     };
 
@@ -286,7 +289,7 @@ app.post("/search", async (req, res) => {
   }
 });
 
-// Atualizar o endpoint `/request` para emitir eventos
+// Adiciona um novo request e avisa o Venue especifico
 app.post("/request", async (req, res) => {
   const { cliente_id, venue_id, musicas } = req.body;
   const token = req.headers["authorization"]?.split(" ")[1];
@@ -362,7 +365,7 @@ app.post("/request", async (req, res) => {
             }
             const clienteNome = clienteResult[0]?.username; // Ajuste aqui para 'username'
 
-            console.log(`Sala : veune-${venue_id}`)
+            console.log(`Sala : veune-${venue_id}`);
             // Emite o evento para o venue específico com o nome do cliente
             const sala = `venue-${venue_id}`;
             console.log(`Tentando enviar para a sala: ${sala}`);
@@ -372,7 +375,6 @@ app.post("/request", async (req, res) => {
               musicas,
               clienteNome,
             });
-
 
             res.json({ message: "Requisição Enviada!" });
           });
@@ -385,9 +387,7 @@ app.post("/request", async (req, res) => {
   }
 });
 
-
-
-//Rota para retornar as requisicoes
+// Rota para retornar as requisições
 app.get("/getrequests", async (req, res) => {
   try {
     // Verificar se o token foi enviado no cabeçalho da requisição
@@ -405,36 +405,52 @@ app.get("/getrequests", async (req, res) => {
         return res.status(401).json({ error: "Token inválido" });
       }
 
-      // Extraímos o id da venue do token
-      const venue_id = decoded.id;
+      // Capturamos o filtro opcional de `venue_id` ou `user_id`
+      const { venue_id: queryVenueId, user_id: queryUserId } = req.query;
 
-      // Realizar a consulta filtrando pelo venue_id e juntando a tabela Status_
-      const [rows] = await db2.query(
-        `
-          SELECT 
-            r.requisicao_id,
-            u.id AS cliente_id,
-            u.username AS cliente_nome,
-            u.email AS cliente_email,
-            v.id AS venue_id,
-            v.nome AS venue_nome,
-            v.localizacao AS venue_localizacao,
-            r.data_requisicao,
-            m.id AS musica_id, -- Adiciona o ID da música
-            m.nome AS musica_nome,
-            m.imagem AS musica_imagem,
-            m.duracao AS musica_duracao,
-            s.status_text -- Adiciona o status da música
-          FROM Requisicoes r
-          JOIN Usuario u ON r.cliente_id = u.id
-          JOIN Venue v ON r.venue_id = v.id
-          LEFT JOIN Musicas_Requisicao m ON r.requisicao_id = m.requisicao_id
-          LEFT JOIN Status_ s ON m.id = s.music_id -- Junção com a tabela Status_
-          WHERE r.venue_id = ? order by r.data_requisicao desc
-        `,
-        [venue_id]
-      );
+      // Construção dinâmica da query SQL
+      let query = `
+        SELECT 
+          r.requisicao_id,
+          u.id AS cliente_id,
+          u.username AS cliente_nome,
+          u.email AS cliente_email,
+          v.id AS venue_id,
+          v.nome AS venue_nome,
+          v.localizacao AS venue_localizacao,
+          r.data_requisicao,
+          m.id AS musica_id,
+          m.nome AS musica_nome,
+          m.imagem AS musica_imagem,
+          m.duracao AS musica_duracao,
+          m.played AS musica_played,  -- Inclui o campo played
+          s.status_text, s.data_resposta, s.comentario  -- Inclui o campo comentario
+        FROM Requisicoes r
+        JOIN Usuario u ON r.cliente_id = u.id
+        JOIN Venue v ON r.venue_id = v.id
+        LEFT JOIN Musicas_Requisicao m ON r.requisicao_id = m.requisicao_id
+        LEFT JOIN Status_ s ON m.id = s.music_id
+        WHERE 1=1
+      `;
 
+      const queryParams = [];
+
+      if (queryVenueId) {
+        query += " AND r.venue_id = ?";
+        queryParams.push(queryVenueId);
+      }
+
+      if (queryUserId) {
+        query += " AND r.cliente_id = ?";
+        queryParams.push(queryUserId);
+      }
+
+      query += " ORDER BY r.data_requisicao DESC";
+
+      // Executa a consulta no banco de dados
+      const [rows] = await db2.query(query, queryParams);
+
+      // Processa os resultados da consulta para estruturar os dados
       const requisicoes = rows.reduce((acc, row) => {
         let requisicao = acc.find((r) => r.requisicao_id === row.requisicao_id);
         if (!requisicao) {
@@ -458,16 +474,21 @@ app.get("/getrequests", async (req, res) => {
 
         if (row.musica_nome) {
           requisicao.musicas.push({
-            id: row.musica_id, // Adiciona o ID da música
+            id: row.musica_id,
             nome: row.musica_nome,
             imagem: row.musica_imagem,
             duracao: row.musica_duracao,
-            status_text: row.status_text, // Adiciona o status da música
+            played: row.musica_played, // Inclui o campo played
+            status_text: row.status_text,
+            data_resposta: row.data_resposta,
+            comentario: row.comentario, // Inclui o campo comentario
           });
         }
 
         return acc;
       }, []);
+
+      // Retorna as requisições processadas
       res.json(requisicoes);
     });
   } catch (error) {
@@ -476,36 +497,173 @@ app.get("/getrequests", async (req, res) => {
   }
 });
 
-
 // Rota para processar a resposta do Venue para uma música específica
-app.post('/process-action', (req, res) => {
-  const { music_id, status_text, comentario } = req.body;
+app.post("/process-action", (req, res) => {
+  const { music_id, status_text, comentario, user_id } = req.body; // Adicionado user_id
+
   // Validações iniciais
-  if (!music_id || !status_text || typeof comentario !== 'string') {
-    return res.status(400).json({ message: 'Dados incompletos ou inválidos!' });
+  if (!music_id || !status_text || typeof comentario !== "string" || !user_id) {
+    return res.status(400).json({ message: "Dados incompletos ou inválidos!" });
   }
 
-  // Atualizar status e comentário da música específica
-  const updateQuery = `
-      UPDATE Status_
-      SET status_text = ?, comentario = ?
-      WHERE music_id = ?`;
+  // Recuperar o nome da música usando o music_id
+  const musicQuery = `SELECT nome FROM Musicas_Requisicao WHERE id = ?`;
 
-  db.query(updateQuery, [status_text, comentario, music_id], (err, result) => {
+  db.query(musicQuery, [music_id], (err, result) => {
     if (err) {
-      console.error('Erro ao atualizar o status da música:', err);
-      return res.status(500).json({ message: 'Erro interno no servidor!' });
+      console.error("Erro ao buscar o nome da música:", err);
+      return res.status(500).json({ message: "Erro interno no servidor!" });
     }
 
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ message: 'Música ou status não encontrado!' });
+    if (result.length === 0) {
+      return res.status(404).json({ message: "Música não encontrada!" });
     }
 
-    // Resposta de sucesso
-    res.json({ message: 'Status da música atualizado com sucesso!' });
+    const musicName = result[0].nome;
+
+    // Atualizar status e comentário da música específica
+    const updateQuery = `
+    UPDATE Status_
+    SET status_text = ?, comentario = ?, data_resposta = ?
+    WHERE music_id = ?`;
+
+    const now = new Date();
+    const dataResposta = `${now.getFullYear()}-${String(
+      now.getMonth() + 1
+    ).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")} ${String(
+      now.getHours()
+    ).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}:${String(
+      now.getSeconds()
+    ).padStart(2, "0")}`;
+    // Formato compatível com MySQL
+
+    db.query(
+      updateQuery,
+      [status_text, comentario, dataResposta, music_id],
+      (err, result) => {
+        if (err) {
+          console.error("Erro ao atualizar o status da música:", err);
+          return res.status(500).json({ message: "Erro interno no servidor!" });
+        }
+
+        if (result.affectedRows === 0) {
+          return res
+            .status(404)
+            .json({ message: "Música ou status não encontrado!" });
+        }
+
+        // Enviar atualização para a sala do usuário
+        const sala = `user-${user_id}`;
+        console.log(`Enviando resposta para a sala: ${sala}`);
+
+        // Ajustando a mensagem para incluir o nome da música
+        const actionMessage =
+          status_text === "approve"
+            ? `A música "${musicName}" foi aceita!`
+            : `A música "${musicName}" foi rejeitada!`;
+
+        io.to(sala).emit("music-action-response", {
+          message: actionMessage,
+          music_id,
+          status_text,
+          comentario,
+          data_resposta: dataResposta, // Enviando a data de resposta no evento
+        });
+
+        // Resposta de sucesso
+        res.json({ message: "Status da música atualizado com sucesso!" });
+      }
+    );
   });
 });
 
+// Rota para marcar a música como tocada
+app.post("/play-music", async (req, res) => {
+  const { music_id } = req.body;
+
+  if (!music_id) {
+    return res.status(400).json({ message: "ID da música não fornecido!" });
+  }
+
+  try {
+    // Atualiza o status da música para tocada
+    const updateQuery =
+      "UPDATE Musicas_Requisicao SET played = TRUE WHERE id = ?";
+    const [result] = await db2.query(updateQuery, [music_id]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Música não encontrada!" });
+    }
+
+    // Recupera o ID do usuário dono da requisição
+    const userQuery = `
+      SELECT r.cliente_id, m.nome AS musica_nome
+      FROM Musicas_Requisicao m
+      JOIN Requisicoes r ON m.requisicao_id = r.requisicao_id
+      WHERE m.id = ?
+    `;
+    const [userRows] = await db2.query(userQuery, [music_id]);
+
+    if (userRows.length === 0) {
+      return res.status(404).json({ message: "Requisição não encontrada!" });
+    }
+
+    const userId = userRows[0].cliente_id;
+    const musicaNome = userRows[0].musica_nome;
+
+    // Envia uma notificação ao usuário dono da requisição
+    const sala = `user-${userId}`;
+    io.to(sala).emit("music-played", {
+      message: `A música "${musicaNome}" foi tocada!`,
+      music_id,
+    });
+
+    res.json({ message: "Música marcada como tocada!" });
+  } catch (error) {
+    console.error("Erro ao marcar a música como tocada:", error);
+    res.status(500).json({ message: "Erro interno no servidor!" });
+  }
+});
+
+// Rota para eliminar uma música da requisição
+app.delete("/delete-music", async (req, res) => {
+  const { music_id } = req.body;
+  const token = req.headers.authorization?.split(" ")[1]; // "Bearer token"
+
+  if (!token) {
+    return res
+      .status(401)
+      .json({ error: "Token de autorização não fornecido" });
+  }
+
+  try {
+    const decoded = jwt.verify(token, SECRET_KEY);
+    const userId = decoded.userId;
+
+    // Verifica se a música pertence ao usuário
+    const [rows] = await db2.query(
+      `SELECT r.cliente_id FROM Musicas_Requisicao m
+       JOIN Requisicoes r ON m.requisicao_id = r.requisicao_id
+       WHERE m.id = ?`,
+      [music_id]
+    );
+
+    if (rows.length === 0 || rows[0].cliente_id !== userId) {
+      return res.status(403).json({ error: "Acesso negado" });
+    }
+
+    // Exclui as entradas na tabela Status_ que referenciam a música
+    await db2.query(`DELETE FROM Status_ WHERE music_id = ?`, [music_id]);
+
+    // Elimina a música
+    await db2.query(`DELETE FROM Musicas_Requisicao WHERE id = ?`, [music_id]);
+
+    res.json({ message: "Música eliminada com sucesso" });
+  } catch (error) {
+    console.error("Erro ao eliminar música:", error);
+    res.status(500).json({ error: "Erro ao eliminar música" });
+  }
+});
 
 server.listen(8081, () => {
   console.log("Servidor HTTP rodando na porta 8081...");
