@@ -44,11 +44,11 @@ const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
 
 const db = mysql.createConnection({
-  host: process.env.DB_HOST || "your-railway-host",
-  user: process.env.DB_USER || "your-railway-user",
-  password: process.env.DB_PASSWORD || "your-railway-password",
-  database: process.env.DB_NAME || "your-railway-database",
-  port: process.env.DB_PORT || 3306,
+  host: process.env.MYSQLHOST,
+  user: process.env.MYSQLUSER,
+  password: process.env.MYSQLPASSWORD,
+  database: process.env.MYSQLDATABASE,
+  port: process.env.MYSQLPORT,
 });
 
 let db2;
