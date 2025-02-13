@@ -11,7 +11,7 @@ import "../../styles/HomeRequest.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const SOCKET_URL = process.env.REACT_APP_SOCKET_URL || "http://localhost:8081";
+const SOCKET_URL = process.env.REACT_APP_SOCKET_URL;
 
 export default function HomeRequest() {
   const { state, dispatch } = useRequest(); // Acessando o estado global do contexto
@@ -86,9 +86,12 @@ export default function HomeRequest() {
   const handleSearch = async () => {
     setIsSearching(true);
     try {
-      const response = await axios.post("http://localhost:8081/search", {
-        query: searchQuery,
-      });
+      const response = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/search`,
+        {
+          query: searchQuery,
+        }
+      );
       dispatch({ type: "SET_SONGS", payload: response.data });
     } catch (error) {
       console.error("Erro ao buscar músicas:", error);
@@ -115,7 +118,7 @@ export default function HomeRequest() {
       const venueId = 1;
       console.log(selected);
       const response = await axios.post(
-        "http://localhost:8081/request",
+        `${process.env.REACT_APP_BACKEND_URL}/request`,
         {
           cliente_id: userId,
           venue_id: venueId,

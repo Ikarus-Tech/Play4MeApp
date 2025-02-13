@@ -19,7 +19,7 @@ const Playlist = () => {
       const venueId = decodedToken.id;
       if (!venueId) throw new Error("venue_id não encontrado no token.");
 
-      const response = await fetch(`http://localhost:8081/getrequests?venue_id=${venueId}`, {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/getrequests?venue_id=${venueId}`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -66,7 +66,7 @@ const Playlist = () => {
 
   const handlePlayClick = async (musicId) => {
     try {
-      const response = await fetch("http://localhost:8081/play-music", {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/play-music`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

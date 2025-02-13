@@ -7,7 +7,7 @@ import { jwtDecode } from "jwt-decode"; // Decodificação do token JWT
 import { io } from "socket.io-client"; // Biblioteca Socket.IO
 import { useRequest } from "../../context/RequestContext"; // Importa o contexto
 
-const SOCKET_URL = process.env.REACT_APP_SOCKET_URL || "http://localhost:8081";
+const SOCKET_URL = process.env.REACT_APP_SOCKET_URL;
 
 const MyRequests = () => {
   const [musicas, setMusicas] = useState([]); // Músicas requisitadas
@@ -31,7 +31,7 @@ const MyRequests = () => {
 
       // Faz a requisição para buscar as músicas
       const response = await fetch(
-        `http://localhost:8081/getrequests?user_id=${userId}`,
+        `${process.env.REACT_APP_BACKEND_URL}/getrequests?user_id=${userId}`,
         {
           method: "GET",
           headers: {
@@ -91,7 +91,7 @@ const MyRequests = () => {
   const handleDeleteMusic = async (musicId) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`http://localhost:8081/delete-music`, {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/delete-music`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,

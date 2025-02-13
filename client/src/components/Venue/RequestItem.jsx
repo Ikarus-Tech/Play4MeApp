@@ -22,7 +22,7 @@ const RequestItem = ({ request, onUpdateRequest }) => {
   
     try {
       
-      const response = await fetch("http://localhost:8081/process-action", {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/process-action`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

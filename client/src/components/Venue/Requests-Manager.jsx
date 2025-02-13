@@ -9,7 +9,7 @@ import "../../styles/RequestManager.css";
 import "../../styles/Playlist.css"
 import { ToastContainer, toast } from "react-toastify";
 
-const SOCKET_URL = process.env.REACT_APP_SOCKET_URL || "http://localhost:8081";
+const SOCKET_URL = process.env.REACT_APP_SOCKET_URL;
 
 function RequestManager() {
   const [userId, setUserId] = useState(null);
