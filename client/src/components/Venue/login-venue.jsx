@@ -19,7 +19,7 @@ const Login = () => {
   function handleSubmit(event) {
     event.preventDefault();
 
-    axios.post('http://localhost:8081/login-venue', { email, password })
+    axios.post(`${process.env.REACT_APP_BACKEND_URL}/login-venue`, { email, password })
       .then(res => {
         const { token } = res.data; // Recebe o token do servidor
         localStorage.setItem('token', token); // Armazena o token no localStorage

@@ -11,7 +11,8 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
-  const GOOGLE_CLIENT_ID = "95123885049-gssvaue3rorebrdfcobfc47oeu8pv8is.apps.googleusercontent.com";
+  const GOOGLE_CLIENT_ID =
+    "95123885049-gssvaue3rorebrdfcobfc47oeu8pv8is.apps.googleusercontent.com";
 
   // Inicialização do GAPI
   useEffect(() => {
@@ -33,7 +34,7 @@ const Login = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
     axios
-      .post("http://localhost:8081/login", { email, password })
+      .post(`${process.env.REACT_APP_BACKEND_URL}/login`, { email, password })
       .then((res) => {
         const { token } = res.data;
         const decodedToken = jwtDecode(token);
@@ -55,28 +56,34 @@ const Login = () => {
   const loginWithGoogle = () => {
     const auth2 = gapi.auth2.getAuthInstance();
 
-    auth2.signIn({ prompt: "select_account" }).then(async (googleUser) => {
-      const idToken = googleUser.getAuthResponse().id_token; // Obtém o ID Token
+    auth2
+      .signIn({ prompt: "select_account" })
+      .then(async (googleUser) => {
+        const idToken = googleUser.getAuthResponse().id_token; // Obtém o ID Token
 
-      try {
-        const res = await axios.post("http://localhost:8081/google-login", {
-          token: idToken, // Envia o ID Token para o backend
-        });
+        try {
+          const res = await axios.post(
+            `${process.env.REACT_APP_BACKEND_URL}/google-login`,
+            {
+              token: idToken, // Envia o ID Token para o backend
+            }
+          );
 
-        const { token } = res.data; // Token JWT gerado pelo backend
-        const decodedToken = jwtDecode(token);
-        const { userId, username } = decodedToken;
+          const { token } = res.data; // Token JWT gerado pelo backend
+          const decodedToken = jwtDecode(token);
+          const { userId, username } = decodedToken;
 
-        localStorage.setItem("token", token);
-        navigate("/venue-profile", { state: { username, userId } });
-      } catch (error) {
-        console.error("Erro ao autenticar com Google:", error);
-        setMessage("Erro no login com o Google. Tente novamente.");
-      }
-    }).catch(error => {
-      console.error("Erro ao fazer login com Google:", error);
-      setMessage("Erro ao fazer login. Tente novamente.");
-    });
+          localStorage.setItem("token", token);
+          navigate("/venue-profile", { state: { username, userId } });
+        } catch (error) {
+          console.error("Erro ao autenticar com Google:", error);
+          setMessage("Erro no login com o Google. Tente novamente.");
+        }
+      })
+      .catch((error) => {
+        console.error("Erro ao fazer login com Google:", error);
+        setMessage("Erro ao fazer login. Tente novamente.");
+      });
   };
 
   return (
@@ -104,7 +111,9 @@ const Login = () => {
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
-          <button type="submit" className="btn">Login</button>
+          <button type="submit" className="btn">
+            Login
+          </button>
           {message && <p className="message">{message}</p>}
           <p>Or using other method</p>
           <button
