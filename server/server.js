@@ -44,10 +44,11 @@ const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
 
 const db = mysql.createConnection({
-  host: process.env.HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_KEY,
-  database: process.env.DB,
+  host: process.env.DB_HOST || "your-railway-host",
+  user: process.env.DB_USER || "your-railway-user",
+  password: process.env.DB_PASSWORD || "your-railway-password",
+  database: process.env.DB_NAME || "your-railway-database",
+  port: process.env.DB_PORT || 3306,
 });
 
 let db2;
@@ -55,10 +56,11 @@ let db2;
 (async () => {
   try {
     db2 = await mysql2.createPool({
-      host: process.env.HOST,
-      user: process.env.DB_USER,
-      password: process.env.DB_KEY,
-      database: process.env.DB,
+      host: process.env.DB_HOST || "your-railway-host",
+      user: process.env.DB_USER || "your-railway-user",
+      password: process.env.DB_PASSWORD || "your-railway-password",
+      database: process.env.DB_NAME || "your-railway-database",
+      port: process.env.DB_PORT || 3306,
     });
     console.log("Conexão com o banco de dados (db2) inicializada.");
   } catch (err) {
