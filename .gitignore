@@ -1,4 +1,6 @@
 node_modules/
 .env
 deployDB.sql
-deployDB.sql.tar.gz
+deploy.tar.gz
+dump.tar.gz
+backend.sql

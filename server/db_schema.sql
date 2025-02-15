@@ -39,10 +39,9 @@ CREATE TABLE Musicas_Requisicao (
 create table Status_(
 	id int not null auto_increment,
     music_id int not null,
-    status_text varchar(25) not null,
+    status_text varchar(25) not null default 'Pending',
     comentario text,
     data_resposta TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    status_text varchar(25) not null default 'Pending',
     primary key(id),
     foreign key(music_id) references Musicas_Requisicao(id)
 );
