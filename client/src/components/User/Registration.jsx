@@ -36,7 +36,7 @@ export default function App() {
     event.preventDefault();
 
     axios
-      .post("https://play4meapp-production.up.railway.app/register", {
+      .post(`${process.env.REACT_APP_BACKEND_URL}/register`, {
         username,
         email,
         password,
