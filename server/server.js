@@ -17,7 +17,7 @@ const server = http.createServer(app); // Criando o servidor HTTP
 
 const io = new Server(server, {
   cors: {
-    origin: "https://play4-me-app.vercel.app/",
+    origin: "https://play4me.vercel.app/",
     methods: ["GET", "POST"],
   },
 });
