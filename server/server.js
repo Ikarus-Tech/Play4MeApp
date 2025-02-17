@@ -17,8 +17,19 @@ const server = http.createServer(app); // Criando o servidor HTTP
 
 const io = new Server(server, {
   cors: {
-    origin: "https://play4me.vercel.app",
-    methods: ["GET", "POST"],
+    origin: (origin, callback) => {
+        const allowedOrigins = [
+          'https://play4me.vercel.app',
+          'http://localhost:3000',
+          // add more origins if needed
+        ];
+        if (!origin || allowedOrigins.includes(origin)) {
+          callback(null, true);
+        } else {
+          callback(new Error('Not allowed by CORS'));
+        }
+      },
+    methods: ['GET', 'POST'],
   },
 });
 
