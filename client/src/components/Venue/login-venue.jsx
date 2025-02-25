@@ -20,7 +20,7 @@ const Login = () => {
   function handleSubmit(event) {
     event.preventDefault();
     axios
-      .post(`http://localhost:8081/login-venue`, {
+      .post(`${process.env.REACT_APP_BACKEND_URL}/login-venue`, {
         email,
         password,
       })
