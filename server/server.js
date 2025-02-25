@@ -67,11 +67,11 @@ let db2;
 (async () => {
   try {
     db2 = await mysql2.createPool({
-      host: process.env.MYSQLHOST || "your-railway-host",
-      user: process.env.MYSQLUSER || "your-railway-user",
-      password: process.env.MYSQLPASSWORD || "your-railway-password",
-      database: process.env.MYSQLDATABASE || "your-railway-database",
-      port: process.env.MYSQLPORT || 3306,
+      host: process.env.MYSQLHOST,
+      user: process.env.MYSQLUSER,
+      password: process.env.MYSQLPASSWORD,
+      database: process.env.MYSQLDATABASE,
+      port: process.env.MYSQLPORT,
     });
     console.log("Conexão com o banco de dados (db2) inicializada.");
   } catch (err) {

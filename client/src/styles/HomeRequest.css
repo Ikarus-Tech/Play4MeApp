@@ -369,6 +369,18 @@ h3 {
   color: #f0a500;
 }
 
+.menu-counter {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background-color: #b34747;
+  color: white;
+  border-radius: 50%;
+  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
 /*==========RESPONSIVIDADE==========*/
 @media (max-width: 768px) {
   .main-content {

@@ -33,7 +33,7 @@ export default function VenueProfile() {
             <button>Follow</button>
           </div>
           <div className={styles.venueProfileDescription}>
-            <h1>DJ Plutônio</h1>
+            <h1>Cais66</h1>
             <div className={styles.flAndRq}>
               <div className={styles.followers}>
                 <h3>Followers</h3>

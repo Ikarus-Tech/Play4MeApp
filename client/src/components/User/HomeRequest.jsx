@@ -22,6 +22,7 @@ export default function HomeRequest() {
   const [showSidebar, setShowSidebar] = useState(false);
   const socketRef = useRef(null);
   const [userId, setUserId] = useState("");
+  const [selectedCount, setSelectedCount] = useState(0);
 
   useEffect(() => {
     if (storedToken) {
@@ -80,7 +81,8 @@ export default function HomeRequest() {
 
   const deleteSelectedSong = (id) => {
     dispatch({ type: "REMOVE_SONG", payload: id });
-    toast.info("Música removida da lista!");
+    setSelectedCount(selectedCount - 1);
+    //toast.info("Música removida da lista!");
   };
 
   const handleSearch = async () => {
@@ -108,8 +110,11 @@ export default function HomeRequest() {
   };
 
   const handleSelectSong = (song) => {
-    dispatch({ type: "ADD_SONG", payload: song });
-    toast.success(`"${song.name}" adicionada à lista de requisições!`);
+    const isAlreadySelected = selected.some((selectedSong) => selectedSong.id === song.id);
+    if (!isAlreadySelected) {
+      dispatch({ type: "ADD_SONG", payload: song });
+      setSelectedCount(selectedCount + 1);
+    }
   };
 
   const handleRequest = async () => {
@@ -133,6 +138,7 @@ export default function HomeRequest() {
 
       dispatch({ type: "SET_SERVER_RESPONSE", payload: response.data });
       dispatch({ type: "RESET_SELECTED" });
+      setSelectedCount(0);
       toast.success(response.data.message || "Requisição enviada!");
     } catch (error) {
       console.error("Erro ao enviar músicas:", error);
@@ -175,8 +181,12 @@ export default function HomeRequest() {
             <i
               className="bx bx-menu menu-icon"
               onClick={toggleSidebar}
-              style={{ cursor: "pointer" }}
-            ></i>
+              style={{ cursor: "pointer", position: "relative" }}
+            >
+              {selectedCount > 0 && (
+                <span className="menu-counter">{selectedCount}</span>
+              )}
+            </i>
           </div>
         </div>
 
