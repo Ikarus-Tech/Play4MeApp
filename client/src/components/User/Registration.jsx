@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { gapi } from "gapi-script";
+import { BiArrowBack } from "react-icons/bi";
 
 export default function App() {
   const [username, setUsername] = useState("");
@@ -89,56 +90,61 @@ export default function App() {
   };
 
   return (
-    <div className="auth-container">
-      <img src={logo} alt="Play 4 Me Logo" />
-      <h2>Get Started</h2>
-      <form onSubmit={handleSubmit}>
-        <div className="input-group">
-          <i className="bi bi-person"></i>
-          <input
-            type="text"
-            placeholder="Create your username"
-            required
-            onChange={(e) => setUsername(e.target.value)}
-          />
-        </div>
-        <div className="input-group">
-          <i className="bi bi-envelope"></i>
-          <input
-            type="email"
-            placeholder="Your email or phone number"
-            required
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
-        <div className="input-group">
-          <i className="bi bi-lock"></i>
-          <input
-            type="password"
-            placeholder="Create your password"
-            required
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
-        <button type="submit" className="btn">
-          Create Account
-        </button>
-        <p>{message}</p> {/* Mensagem de resposta do backend */}
-        <p>Or using other method</p>
-        <button
-          type="button"
-          className="btn btn-alt social-btns"
-          onClick={() => loginWithGoogle()}
-        >
-          <i className="bi bi-google"></i> Sign Up with Google
-        </button>
-        <button type="button" className="btn btn-alt social-btns">
-          <i className="bi bi-instagram"></i> Sign Up with Instagram
-        </button>
-        <p>
-          Have an account? <Link to="/login">Login</Link>
-        </p>
-      </form>
+    <div className="auth">
+      <div className="auth-container">
+        <img src={logo} alt="Play 4 Me Logo" />
+        <h2>Get Started</h2>
+        <form onSubmit={handleSubmit}>
+          <div className="input-group">
+            <i className="bi bi-person"></i>
+            <input
+              type="text"
+              placeholder="Create your username"
+              required
+              onChange={(e) => setUsername(e.target.value)}
+            />
+          </div>
+          <div className="input-group">
+            <i className="bi bi-envelope"></i>
+            <input
+              type="email"
+              placeholder="Your email or phone number"
+              required
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+          <div className="input-group">
+            <i className="bi bi-lock"></i>
+            <input
+              type="password"
+              placeholder="Create your password"
+              required
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+          <button type="submit" className="btn">
+            Create Account
+          </button>
+          <p>{message}</p> {/* Mensagem de resposta do backend */}
+          <p>Or using other method</p>
+          <button
+            type="button"
+            className="btn btn-alt social-btns"
+            onClick={() => loginWithGoogle()}
+          >
+            <i className="bi bi-google"></i> Sign Up with Google
+          </button>
+          <button type="button" className="btn btn-alt social-btns">
+            <i className="bi bi-instagram"></i> Sign Up with Instagram
+          </button>
+          <p>
+            Have an account? <Link to="/login">Login</Link>
+          </p>
+          <button className="back-button" onClick={() => navigate("/login")}>
+            <BiArrowBack size={24} /> Voltar
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

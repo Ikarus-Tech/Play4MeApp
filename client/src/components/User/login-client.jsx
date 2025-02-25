@@ -5,6 +5,7 @@ import { jwtDecode } from "jwt-decode"; // Corrigindo a importação do jwtDecod
 import logo from "../../assets/logo.png";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { gapi } from "gapi-script";
+import { BiArrowBack } from "react-icons/bi"; // Importando o ícone de seta para trás
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -126,6 +127,9 @@ const Login = () => {
           <p>
             Don&apos;t have an account? <Link to="/regist">Sign up</Link>
           </p>
+          <button className="back-button" onClick={() => navigate("/")}>
+            <BiArrowBack size={24} /> Back
+          </button>
         </form>
       </div>
     </div>
