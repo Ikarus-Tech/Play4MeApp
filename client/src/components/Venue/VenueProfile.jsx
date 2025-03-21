@@ -46,7 +46,7 @@ export default function VenueProfile() {
             </div>
             <div className={styles.paragraph}>
               <p>
-                Bem vindo a conta oficial do Cais66 no Play4Me. Aqui você pode requisitar músicas e nos tocamos para você. Siga-nos para mais atualizações.
+                Bem vindo a conta oficial do COCO Beach no Play4Me. Aqui você pode requisitar músicas e nos tocamos para você. Siga-nos para mais atualizações.
               </p>
             </div>
           </div>
