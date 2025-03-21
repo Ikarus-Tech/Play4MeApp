@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../../assets/logo.png";
-import cais66Image from "../../assets/cais66Image.png";
+import cocoBeachImage from "../../assets/cocobeach_logo.jpg";
 import "boxicons/css/boxicons.min.css";
 import styles from "../../styles/VenueProfile.module.css";
 
@@ -28,12 +28,12 @@ export default function VenueProfile() {
 
       <section className={styles.heroSection}>
         <div className={styles.profileDescription}>
-          <img src={cais66Image} alt="Cais 66" id={styles.cais66Image} />
+          <img src={cocoBeachImage} alt="Cais 66" id={styles.cais66Image} />
           <div className={styles.followBtn}>
             <button>Follow</button>
           </div>
           <div className={styles.venueProfileDescription}>
-            <h1>Cais66</h1>
+            <h1>COCO Beach</h1>
             <div className={styles.flAndRq}>
               <div className={styles.followers}>
                 <h3>Followers</h3>
