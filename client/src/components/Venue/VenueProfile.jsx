@@ -55,7 +55,7 @@ export default function VenueProfile() {
 
       <section className={styles.requestAndTipWrapper}>
         <button onClick={handleRequestSong}>Request a song</button>
-        <button>Send a "Thank You" tip</button>
+        {/* <button>Send a "Thank You" tip</button> */}
       </section>
 
       {/*<section className={styles.livePlace}>
