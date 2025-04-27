@@ -1,21 +1,6 @@
-create database play4me;
-use play4me;
-create table Usuario(
-	id int not null auto_increment,
-    username varchar(40) not null,
-    email varchar(255) unique,
-    pwd varchar(60) not null,
-    primary key(id)
-);
 
-create table Venue(
-	id int not null auto_increment,
-    nome varchar(50) not null,
-    localizacao varchar(50),
-    email varchar(40),
-    pwd varchar(60) not null,
-    primary key(id)
-);
+use play4meikarustec_railway;
+
 
 CREATE TABLE Requisicoes (
     requisicao_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -51,40 +36,3 @@ create table Status_(
 # alter table Usuario modify column email varchar(255);
 
 insert into Venue values(default, "Cais66", "Complexo coconuts, Av. da Marginal, Maputo", "cais66@gmail.com", "1234");
-
-select * from Usuario;
-select * from Venue;
-select * from Requisicoes;
-select * from Musicas_Requisicao;
-select * from Status_;
-SELECT * FROM Usuario;
-SELECT * FROM Usuario WHERE email = 'test_email';
-select * from musicas;
-
-SELECT 
-            r.requisicao_id,
-            u.id AS cliente_id,
-            u.username AS cliente_nome,
-            u.email AS cliente_email,
-            v.id AS venue_id,
-            v.nome AS venue_nome,
-            v.localizacao AS venue_localizacao,
-            r.data_requisicao,
-            mr.id AS musica_requisicao_id,
-            mr.nome AS musica_nome,
-            mr.imagem AS musica_imagem,
-            mr.duracao AS musica_duracao,
-            s.status_text AS musica_status_text,  -- Corrigido
-            s.comentario AS musica_comentario    -- Corrigido
-          FROM Requisicoes r
-          JOIN Usuario u ON r.cliente_id = u.id
-          JOIN Venue v ON r.venue_id = v.id
-          LEFT JOIN Musicas_Requisicao mr ON r.requisicao_id = mr.requisicao_id
-          LEFT JOIN Status_ s ON mr.id = s.music_id
-          WHERE r.venue_id = 1 order by r.data_requisicao desc;
-          
-# alter table Status_ add column data_resposta TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
-
-#Update: Rodar os alter table abaixo
-# ALTER TABLE Musicas_Requisicao ADD COLUMN played BOOLEAN DEFAULT FALSE;
-# alter table Status_ modify column status_text varchar(25) not null default 'Pending';

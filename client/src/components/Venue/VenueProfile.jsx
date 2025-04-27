@@ -37,11 +37,11 @@ export default function VenueProfile() {
             <div className={styles.flAndRq}>
               <div className={styles.followers}>
                 <h3>Followers</h3>
-                <h1>50K</h1>
+                <h1>0</h1>
               </div>
               <div className={styles.requests}>
                 <h3>Requests</h3>
-                <h1>100</h1>
+                <h1>0</h1>
               </div>
             </div>
             <div className={styles.paragraph}>
