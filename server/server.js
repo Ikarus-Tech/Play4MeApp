@@ -14,20 +14,16 @@ const app = express();
 
 const allowedOrigins = ["https://play4me.vercel.app", "http://localhost:3000"];
 
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      // Permite requests sem origin (ex: mobile, curl)
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    methods: ["GET", "POST"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "https://play4me.vercel.app");
+  res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+  next();
+});
+
 
 app.use(express.json());
 
