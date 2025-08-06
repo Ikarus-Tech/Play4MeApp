@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../../assets/logo.png";
-import cocoBeachImage from "../../assets/cocobeach_logo.jpg";
+import play4meLogo from "../../assets/logo.png";
 import "boxicons/css/boxicons.min.css";
 import styles from "../../styles/VenueProfile.module.css";
 
@@ -15,7 +15,7 @@ export default function VenueProfile() {
   return (
     <main className={styles.main}>
       <header className={styles.header}>
-        <img src={logo} alt="Play 4 me Logo" id={styles.logo} />
+        
         {/*<div className={styles.searchContainer}>
           <i className={`bx bx-search-alt-2 ${styles.searchIcon}`}></i>
           <input
@@ -28,16 +28,14 @@ export default function VenueProfile() {
 
       <section className={styles.heroSection}>
         <div className={styles.profileDescription}>
-          <img src={cocoBeachImage} alt="Cais 66" id={styles.cais66Image} />
-          <div className={styles.followBtn}>
-            <button>Follow</button>
-          </div>
+          <img src={play4meLogo} alt="Cais 66" id={styles.cais66Image} />
+          
           <div className={styles.venueProfileDescription}>
-            <h1>COCO Beach</h1>
+            <h1>Play 4 Me</h1>
             
             <div className={styles.paragraph}>
               <p>
-                Bem vindo a conta oficial do COCO Beach no Play4Me. Aqui você pode requisitar músicas e nos tocamos para você. Siga-nos para mais atualizações.
+                Bem vindo a conta oficial da Play4Me. Aqui você pode requisitar músicas e nos tocamos para você. Divirta-se!
               </p>
             </div>
           </div>
