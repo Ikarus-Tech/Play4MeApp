@@ -11,23 +11,22 @@ const { Server } = require("socket.io");
 
 const app = express();
 
+
 const allowedOrigins = ["https://play4me.vercel.app", "http://localhost:3000"];
 
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: function (origin, callback) {
+      // Permite requests sem origin (ex: mobile, curl)
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     methods: ["GET", "POST"],
     allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
-
-// Garantir resposta ao preflight
-app.options(
-  "*",
-  cors({
-    origin: allowedOrigins,
-    methods: ["GET", "POST"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
   })
 );
 
