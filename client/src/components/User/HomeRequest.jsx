@@ -15,7 +15,7 @@ const SOCKET_URL = process.env.REACT_APP_SOCKET_URL;
 
 export default function HomeRequest() {
   const { state, dispatch } = useRequest(); // Acessando o estado global do contexto
-  const { searchQuery, songs, selected, serverResponse } = state;
+  const { searchQuery, songs, selected } = state;
   const navigate = useNavigate();
   const storedToken = localStorage.getItem("token");
   const [isSearching, setIsSearching] = useState(false);
@@ -110,7 +110,9 @@ export default function HomeRequest() {
   };
 
   const handleSelectSong = (song) => {
-    const isAlreadySelected = selected.some((selectedSong) => selectedSong.id === song.id);
+    const isAlreadySelected = selected.some(
+      (selectedSong) => selectedSong.id === song.id
+    );
     if (!isAlreadySelected) {
       dispatch({ type: "ADD_SONG", payload: song });
       setSelectedCount(selectedCount + 1);
