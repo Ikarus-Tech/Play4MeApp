@@ -1,6 +1,5 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import logo from "../../assets/logo.png";
 import play4meLogo from "../../assets/logo.png";
 import "boxicons/css/boxicons.min.css";
 import styles from "../../styles/VenueProfile.module.css";

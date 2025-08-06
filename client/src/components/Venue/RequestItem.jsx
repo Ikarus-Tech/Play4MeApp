@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import PropTypes from "prop-types";
 import Modal from "./Modal.jsx"; // Importando o modal
 import "../../styles/RequestItem.css";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const RequestItem = ({ request, onUpdateRequest }) => {

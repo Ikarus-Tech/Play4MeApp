@@ -94,7 +94,6 @@ app.post("/google-login", async (req, res) => {
     const payload = ticket.getPayload();
     const { email, sub: googleId, name } = payload;
 
-    // Verifica se o email está confirmado
     if (!payload.email_verified) {
       return res
         .status(401)
@@ -152,7 +151,7 @@ app.post("/login", (req, res) => {
           SECRET_KEY,
           { expiresIn: "5h" }
         );
-        return res.json({ token }); // Apenas retorna o token, contendo todos os dados necessários
+        return res.json({ token });
       } else {
         return res.status(401).json("Senha incorreta");
       }

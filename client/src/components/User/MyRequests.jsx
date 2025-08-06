@@ -5,7 +5,6 @@ import "react-toastify/dist/ReactToastify.css";
 import "../../styles/Playlist.css";
 import { jwtDecode } from "jwt-decode"; // Decodificação do token JWT
 import { io } from "socket.io-client"; // Biblioteca Socket.IO
-import { useRequest } from "../../context/RequestContext"; // Importa o contexto
 
 const SOCKET_URL = process.env.REACT_APP_SOCKET_URL;
 
@@ -15,8 +14,6 @@ const MyRequests = () => {
   const [searchTerm, setSearchTerm] = useState(""); // Estado para o campo de pesquisa
   const socketRef = useRef(null); // Referência para o socket
   const navigate = useNavigate(); // Hook para navegação
-
-  const { state, dispatch } = useRequest(); // Usa o contexto global
 
   // Função para buscar músicas requisitadas
   const fetchMusicas = async () => {
@@ -91,14 +88,17 @@ const MyRequests = () => {
   const handleDeleteMusic = async (musicId) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/delete-music`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ music_id: musicId }),
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/delete-music`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ music_id: musicId }),
+        }
+      );
 
       if (!response.ok) throw new Error("Erro ao eliminar música.");
 

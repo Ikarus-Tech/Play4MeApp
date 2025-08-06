@@ -2,8 +2,6 @@ import React, { useEffect, useState, forwardRef, useImperativeHandle } from "rea
 import axios from "axios";
 import RequestItem from "./RequestItem";
 
-const SOCKET_URL = process.env.REACT_APP_SOCKET_URL;
-
 const RequestList = forwardRef(({ userId, searchTerm }, ref) => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -26,12 +24,12 @@ const RequestList = forwardRef(({ userId, searchTerm }, ref) => {
     }
   };
 
-  // Buscar as requisições ao montar o componente
   useEffect(() => {
     if (userId) {
       fetchRequests(); // Passar o userId para buscar as requisições relacionadas ao usuário (da venue)
     }
-  }, [userId]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleUpdateRequest = (updatedRequest) => {
     // Recarregar as requisições após uma nova requisição ser recebida
