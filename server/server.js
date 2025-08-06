@@ -39,6 +39,7 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+app.use(express.json());
 
 const server = http.createServer(app); // Criando o servidor HTTP
 
