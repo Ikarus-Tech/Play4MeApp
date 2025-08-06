@@ -11,21 +11,34 @@ const { Server } = require("socket.io");
 
 const app = express();
 
+const allowedOrigins = [
+  "https://play4me.vercel.app",
+  "http://localhost:3000",
+  /^https:\/\/play4me-.*\.vercel\.app$/, // Allow Vercel preview URLs
+];
 
-const allowedOrigins = ["https://play4me.vercel.app", "http://localhost:3000"];
-
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "https://play4me.vercel.app");
-  res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(200);
-  }
-  next();
-});
-
-
-app.use(express.json());
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      console.log("Checking origin:", origin); // Debug log
+      if (
+        !origin ||
+        allowedOrigins.some(
+          (allowed) =>
+            (typeof allowed === "string" && allowed === origin) ||
+            (allowed instanceof RegExp && allowed.test(origin))
+        )
+      ) {
+        callback(null, true);
+      } else {
+        console.error("CORS blocked for origin:", origin);
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    methods: ["GET", "POST", "OPTIONS"], // Explicitly allow OPTIONS
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
 const server = http.createServer(app); // Criando o servidor HTTP
 
