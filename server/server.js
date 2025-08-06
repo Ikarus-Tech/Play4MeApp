@@ -11,25 +11,34 @@ const { Server } = require("socket.io");
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+
+const allowedOrigins = ["https://play4me.vercel.app", "http://localhost:3000"];
+app.use(
+  cors({
+    origin: allowedOrigins,
+    methods: ["GET", "POST"],
+    credentials: true,
+  })
+);
+
 
 const server = http.createServer(app); // Criando o servidor HTTP
 
 const io = new Server(server, {
   cors: {
     origin: (origin, callback) => {
-        const allowedOrigins = [
-          'https://play4me.vercel.app',
-          'http://localhost:3000',
-          // add more origins if needed
-        ];
-        if (!origin || allowedOrigins.includes(origin)) {
-          callback(null, true);
-        } else {
-          callback(new Error('Not allowed by CORS'));
-        }
-      },
-    methods: ['GET', 'POST'],
+      const allowedOrigins = [
+        "https://play4me.vercel.app",
+        "http://localhost:3000",
+        // add more origins if needed
+      ];
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    methods: ["GET", "POST"],
   },
 });
 
