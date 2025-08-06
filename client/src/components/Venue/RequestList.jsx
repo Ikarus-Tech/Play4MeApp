@@ -24,7 +24,6 @@ const RequestList = forwardRef(({ userId, searchTerm }, ref) => {
     }
   };
 
-  // Buscar as requisições ao montar o componente
   useEffect(() => {
     if (userId) {
       fetchRequests(); // Passar o userId para buscar as requisições relacionadas ao usuário (da venue)
