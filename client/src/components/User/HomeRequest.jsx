@@ -120,7 +120,7 @@ export default function HomeRequest() {
   const handleRequest = async () => {
     try {
       const token = localStorage.getItem("token");
-      const venueId = 1;
+      const venueId = 3;
       console.log(selected);
       const response = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/request`,

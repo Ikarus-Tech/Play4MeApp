@@ -54,25 +54,13 @@ const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
 
-const db = mysql.createConnection({
-  host: process.env.MYSQLHOST,
-  user: process.env.MYSQLUSER,
-  password: process.env.MYSQLPASSWORD,
-  database: process.env.MYSQLDATABASE,
-  port: process.env.MYSQLPORT,
-});
+const db = mysql.createConnection(process.env.MYSQL_PUBLIC_URL);
 
 let db2;
 
 (async () => {
   try {
-    db2 = await mysql2.createPool({
-      host: process.env.MYSQLHOST,
-      user: process.env.MYSQLUSER,
-      password: process.env.MYSQLPASSWORD,
-      database: process.env.MYSQLDATABASE,
-      port: process.env.MYSQLPORT,
-    });
+    db2 = await mysql2.createPool(process.env.MYSQL_PUBLIC_URL);
     console.log("Conexão com o banco de dados (db2) inicializada.");
   } catch (err) {
     console.error("Erro ao conectar ao banco de dados (db2):", err);
