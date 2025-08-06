@@ -10,17 +10,28 @@ const http = require("http");
 const { Server } = require("socket.io");
 
 const app = express();
-app.use(express.json());
 
 const allowedOrigins = ["https://play4me.vercel.app", "http://localhost:3000"];
+
 app.use(
   cors({
     origin: allowedOrigins,
     methods: ["GET", "POST"],
-    credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
+// Garantir resposta ao preflight
+app.options(
+  "*",
+  cors({
+    origin: allowedOrigins,
+    methods: ["GET", "POST"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
+app.use(express.json());
 
 const server = http.createServer(app); // Criando o servidor HTTP
 
