@@ -58,7 +58,7 @@ function RequestManager() {
       socket.on("connect", () => {
         console.log("Conectado ao servidor:", socket.id);
 
-        const roomId = `venue-${userId}`;
+        const roomId = `venue-${3}`;
         socket.emit("join-room", roomId); // Entrar na sala
         console.log(`Solicitação para entrar na sala: ${roomId}`);
       });
