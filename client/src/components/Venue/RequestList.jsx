@@ -10,7 +10,7 @@ const RequestList = forwardRef(({ userId, searchTerm }, ref) => {
   // Função para buscar as requisições com base no userId (da venue)
   const fetchRequests = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/getrequests?venue_id=${userId}`, {
+      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/getrequests?venue_id=${3}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },

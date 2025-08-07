@@ -19,7 +19,7 @@ const Playlist = () => {
       const venueId = decodedToken.id;
       if (!venueId) throw new Error("venue_id não encontrado no token.");
 
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/getrequests?venue_id=${venueId}`, {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/getrequests?venue_id=${3}`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
