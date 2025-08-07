@@ -8,37 +8,17 @@ require("dotenv").config();
 const express = require("express");
 const http = require("http");
 const { Server } = require("socket.io");
-
 const app = express();
-
-const allowedOrigins = [
-  "https://play4me.vercel.app",
-  "http://localhost:3000",
-  /^https:\/\/play4me-.*\.vercel\.app$/, // Allow Vercel preview URLs
-];
 
 app.use(
   cors({
-    origin: function (origin, callback) {
-      console.log("Checking origin:", origin); // Debug log
-      if (
-        !origin ||
-        allowedOrigins.some(
-          (allowed) =>
-            (typeof allowed === "string" && allowed === origin) ||
-            (allowed instanceof RegExp && allowed.test(origin))
-        )
-      ) {
-        callback(null, true);
-      } else {
-        console.error("CORS blocked for origin:", origin);
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    methods: ["GET", "POST", "OPTIONS"], // Explicitly allow OPTIONS
+    origin: process.env.CLIENT_URL,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
+    optionsSuccessStatus: 200,
   })
 );
+
 app.use(express.json());
 
 const server = http.createServer(app); // Criando o servidor HTTP
