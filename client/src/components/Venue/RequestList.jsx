@@ -1,4 +1,9 @@
-import React, { useEffect, useState, forwardRef, useImperativeHandle } from "react";
+import React, {
+  useEffect,
+  useState,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
 import axios from "axios";
 import RequestItem from "./RequestItem";
 
@@ -10,11 +15,14 @@ const RequestList = forwardRef(({ userId, searchTerm }, ref) => {
   // Função para buscar as requisições com base no userId (da venue)
   const fetchRequests = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/getrequests?venue_id=${3}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      const response = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/getrequests?venue_id=${3}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
       setRequests(response.data);
     } catch (err) {
       console.error("Erro ao buscar requisições:", err);
@@ -25,10 +33,9 @@ const RequestList = forwardRef(({ userId, searchTerm }, ref) => {
   };
 
   useEffect(() => {
-    if (userId) {
-      fetchRequests(); // Passar o userId para buscar as requisições relacionadas ao usuário (da venue)
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    fetchRequests(); // Passar o userId para buscar as requisições relacionadas ao usuário (da venue)
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleUpdateRequest = (updatedRequest) => {
@@ -45,10 +52,6 @@ const RequestList = forwardRef(({ userId, searchTerm }, ref) => {
   const filteredRequests = requests.filter((request) =>
     request.cliente.nome.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  if (loading) {
-    return <div>Carregando...</div>;
-  }
 
   if (error) {
     return <div className="error">{error}</div>;
