@@ -23,14 +23,18 @@ app.use(express.json());
 
 const server = http.createServer(app); // Criando o servidor HTTP
 
+const allowedOrigins = ["https://play4me.vercel.app", "http://localhost:3000"];
+
+if (
+  process.env.CLIENT_URL &&
+  !allowedOrigins.includes(process.env.CLIENT_URL)
+) {
+  allowedOrigins.push(process.env.CLIENT_URL);
+}
+
 const io = new Server(server, {
   cors: {
     origin: (origin, callback) => {
-      const allowedOrigins = [
-        "https://play4me.vercel.app",
-        "http://localhost:3000",
-        // add more origins if needed
-      ];
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
